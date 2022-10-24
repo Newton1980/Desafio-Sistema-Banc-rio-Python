@@ -1,33 +1,72 @@
-from tkinter import Menu
+menu = """
 
+[d] Depositar
+[s] Sacar 
+[e] Extrato 
+[q] Sair 
 
-class Conta:
-    cliente = "Newton Nascimento"
-    agencia = "001"
-    conta =  "0553372-4"
-    saldo = 0
+=> """
+cliente = "Newton Douglas"
+agencia = "0001"
+numero_conta = "00553372-4"
+saldo = 0
+limite = 500
+extrato = ""
+numero_saques = 0
+LIMITE_SAQWUES = 3
 
-def menu (self):
-    print("-" * 30)
-    print(f'MENU DE ENTRADA' )
-    print( '-' * 30)
-    print( "Opções" )
-    print( '1 - Extrato')
-    print( '2 - Depósito')
-    print( '3 - Saque')
-    print( '4 - Sair')
-    opção = input("Digite a opção desejada: ")
-    if opção == "1":
-        proprio.extrato ()
-    elif opção == "2":
-        valor = float(input("Digite a opção desejada: "))
-        proprio.depositar (valor)
-    elif opção == "4":
-        exit()
+while True:
+
+    opcao = input(menu)
+
+    if opcao == "d":
+        valor = float(input("Informe o valor do depósito: "))
+
+        if valor > 0:
+            saldo += valor
+            extrato += f'Depósito: R$ {valor:.2f}\n'
+
+        else:
+            print("Operação Falhou! O valor informado é inválido")
+
+    elif opcao == "s":
+        valor = float(input("Informe o valor do Saque: "))
+
+        excedeu_saldo = valor > saldo
+
+        excedeu_limite = valor > limite
+
+        excedeu_saques = numero_saques >= LIMITE_SAQWUES
+
+        if excedeu_saldo:
+            print("Operação falhou! Voce não tem saldo suficiente.")
+
+        elif excedeu_limite:
+            print("Operação falhou! O valor do saque excede o limite.")
+
+        elif excedeu_saques:
+            print("Operação Falhou! Número máximo de saques excedido.")
+
+        elif valor > 0:
+            saldo -= valor
+            extrato += f"Saque: R$ {valor:.2f}\n"
+            numero_saques += 1
+
+        else:
+            print(" Operação falhou! O valor informado é inválido.")
         
+    elif opcao == "e":
+        print("\n==============EXTRATO==============")
+        print(f'CLIENTE - {cliente}')
+        print(f'AGÊNCIA {agencia} CONTA {numero_conta}')
+        print("====================================")
+        print('LANÇAMENTOS')
+        print("Não foram realizadas movimentações ." if not extrato else extrato)
+        print(f"Saldo: R$ {saldo:.2f}")
+        print("====================================")
+    
+    elif opcao == "q":
+        break
 
-def depositar( self, valor):
-
-def sacar(self, valor):
-
-def extrato(self, ultimo = 0):
+    else:
+        print("Operação Inválida, por favor selecione novamente a operação desejada")
