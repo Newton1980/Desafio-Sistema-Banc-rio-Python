@@ -86,27 +86,32 @@
     {
       "startMs": 0,
       "endMs": 7000,
-      "text": "\"Essa proposta é boa?\" — A IA encontrou razões para concordar."
+      "text": "\"Essa proposta é boa?\" — A IA encontrou razões para concordar.",
+      "position": "center"
     },
     {
       "startMs": 7000,
       "endMs": 14000,
-      "text": "Você acrescenta detalhes. Ela continua validando. Sempre."
+      "text": "Você acrescenta detalhes. Ela continua validando. Sempre.",
+      "position": "center"
     },
     {
       "startMs": 14000,
       "endMs": 21000,
-      "text": "O problema não está só na IA. Está em como você formulou a pergunta."
+      "text": "O problema não está só na IA. Está em como você formulou a pergunta.",
+      "position": "center"
     },
     {
       "startMs": 21000,
       "endMs": 28000,
-      "text": "\"Demonstre por que este projeto é bom\" ≠ \"Avalie se existem evidências suficientes\""
+      "text": "\"Demonstre por que este projeto é bom\" ≠ \"Avalie se existem evidências suficientes\"",
+      "position": "center"
     },
     {
       "startMs": 28000,
       "endMs": 35000,
-      "text": "Peça à IA o melhor argumento contrário à sua conclusão."
+      "text": "Peça à IA o melhor argumento contrário à sua conclusão.",
+      "position": "center"
     }
   ],
   "audio": [

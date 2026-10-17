@@ -102,32 +102,38 @@
     {
       "startMs": 0,
       "endMs": 7000,
-      "text": "A resposta parecia perfeita. Gramática impecável. Tom profissional."
+      "text": "A resposta parecia perfeita. Gramática impecável. Tom profissional.",
+      "position": "center"
     },
     {
       "startMs": 7000,
       "endMs": 14000,
-      "text": "\"Conforme o Art. 17 da Lei nº...\" A frase parecia precisa."
+      "text": "\"Conforme o Art. 17 da Lei nº...\" A frase parecia precisa.",
+      "position": "center"
     },
     {
       "startMs": 14000,
       "endMs": 21000,
-      "text": "O artigo existia. Só que tratava de outro assunto completamente."
+      "text": "O artigo existia. Só que tratava de outro assunto completamente.",
+      "position": "center"
     },
     {
       "startMs": 21000,
       "endMs": 28000,
-      "text": "Isso é confabulação. A IA apresenta conteúdo falso com confiança."
+      "text": "Isso é confabulação. A IA apresenta conteúdo falso com confiança.",
+      "position": "center"
     },
     {
       "startMs": 28000,
       "endMs": 35000,
-      "text": "Fluência não é evidência de verdade."
+      "text": "Fluência não é evidência de verdade.",
+      "position": "center"
     },
     {
       "startMs": 35000,
       "endMs": 42000,
-      "text": "Verifique. Especialmente: números, leis, datas, citações e referências."
+      "text": "Verifique. Especialmente: números, leis, datas, citações e referências.",
+      "position": "center"
     }
   ],
   "audio": [

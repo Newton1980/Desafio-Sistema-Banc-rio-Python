@@ -86,27 +86,32 @@
     {
       "startMs": 0,
       "endMs": 7000,
-      "text": "\"Não dá para confiar na IA.\" — \"Confio em tudo que ela diz.\""
+      "text": "\"Não dá para confiar na IA.\" — \"Confio em tudo que ela diz.\"",
+      "position": "center"
     },
     {
       "startMs": 7000,
       "endMs": 14000,
-      "text": "Confiança profissional raramente é absoluta. Ela é calibrada."
+      "text": "Confiança profissional raramente é absoluta. Ela é calibrada.",
+      "position": "center"
     },
     {
       "startMs": 14000,
       "endMs": 21000,
-      "text": "Sugerir títulos: tolerância alta. Fundamentar uma decisão: outro padrão."
+      "text": "Sugerir títulos: tolerância alta. Fundamentar uma decisão: outro padrão.",
+      "position": "center"
     },
     {
       "startMs": 21000,
       "endMs": 28000,
-      "text": "Quanto maior a consequência do erro, maior deve ser sua supervisão."
+      "text": "Quanto maior a consequência do erro, maior deve ser sua supervisão.",
+      "position": "center"
     },
     {
       "startMs": 28000,
       "endMs": 35000,
-      "text": "Isso não é medo. É critério."
+      "text": "Isso não é medo. É critério.",
+      "position": "center"
     }
   ],
   "audio": [

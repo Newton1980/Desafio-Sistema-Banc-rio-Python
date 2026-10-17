@@ -102,32 +102,38 @@
     {
       "startMs": 0,
       "endMs": 7000,
-      "text": "Pergunta. Resposta. Cópia."
+      "text": "Pergunta. Resposta. Cópia.",
+      "position": "center"
     },
     {
       "startMs": 7000,
       "endMs": 14000,
-      "text": "O servidor recebeu a tarefa. Abriu a IA. Digitou a pergunta."
+      "text": "O servidor recebeu a tarefa. Abriu a IA. Digitou a pergunta.",
+      "position": "center"
     },
     {
       "startMs": 14000,
       "endMs": 21000,
-      "text": "A resposta chegou em segundos. Bem escrita. Fluente. Profissional."
+      "text": "A resposta chegou em segundos. Bem escrita. Fluente. Profissional.",
+      "position": "center"
     },
     {
       "startMs": 21000,
       "endMs": 28000,
-      "text": "Ele copiou. Colou no documento. Assinou. Enviou."
+      "text": "Ele copiou. Colou no documento. Assinou. Enviou.",
+      "position": "center"
     },
     {
       "startMs": 28000,
       "endMs": 35000,
-      "text": "Ninguém verificou. Ninguém precisou entender."
+      "text": "Ninguém verificou. Ninguém precisou entender.",
+      "position": "center"
     },
     {
       "startMs": 35000,
       "endMs": 42000,
-      "text": "Gerar não é aprovar. Seu trabalho ainda não terminou."
+      "text": "Gerar não é aprovar. Seu trabalho ainda não terminou.",
+      "position": "center"
     }
   ],
   "audio": [
