@@ -1,0 +1,139 @@
+{
+  "shortTitle": "Gerar Não É Aprovar",
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "imageUrl": "3725aedb-e402-4968-9169-78d1f95c2555",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "imageUrl": "a34bc388-7207-46a0-8161-315ee80ee4cf",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "imageUrl": "1cf12223-e88d-487f-b862-a041a4762958",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "imageUrl": "b56a940b-41d1-4195-9349-389abb766eae",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "imageUrl": "3331df9e-90f9-46d9-ba8b-6d9f9349dac6",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "text": "\"Se alguém me questionar, eu consigo explicar essa conclusão?\""
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "text": "A IA pode organizar, resumir, sugerir e produzir uma primeira versão."
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "text": "Mas o uso profissional do resultado continua exigindo sua compreensão."
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "text": "Você não pode assinar aquilo que não compreende."
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "text": "A IA terminou a resposta. Seu trabalho ainda não."
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "audioUrl": "3725aedb-e402-4968-9169-78d1f95c2555"
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "audioUrl": "a34bc388-7207-46a0-8161-315ee80ee4cf"
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "audioUrl": "1cf12223-e88d-487f-b862-a041a4762958"
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "audioUrl": "b56a940b-41d1-4195-9349-389abb766eae"
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "audioUrl": "3331df9e-90f9-46d9-ba8b-6d9f9349dac6"
+    }
+  ]
+}

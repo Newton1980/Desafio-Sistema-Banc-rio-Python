@@ -1,0 +1,139 @@
+{
+  "shortTitle": "IA Como Espelho",
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "imageUrl": "0ebe6582-0148-4593-ad45-36706881245d",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "imageUrl": "05d345ed-440e-4b77-927d-f62dddf02720",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "imageUrl": "82416243-ffd0-42cc-bbf1-53dfabf6828c",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "imageUrl": "3278ee06-d642-4cf0-806c-946315c73e6d",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "imageUrl": "397c9f64-88ce-47de-846a-f1e8af8fe2fd",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "text": "\"Essa proposta é boa?\" — A IA encontrou razões para concordar."
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "text": "Você acrescenta detalhes. Ela continua validando. Sempre."
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "text": "O problema não está só na IA. Está em como você formulou a pergunta."
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "text": "\"Demonstre por que este projeto é bom\" ≠ \"Avalie se existem evidências suficientes\""
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "text": "Peça à IA o melhor argumento contrário à sua conclusão."
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "audioUrl": "0ebe6582-0148-4593-ad45-36706881245d"
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "audioUrl": "05d345ed-440e-4b77-927d-f62dddf02720"
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "audioUrl": "82416243-ffd0-42cc-bbf1-53dfabf6828c"
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "audioUrl": "3278ee06-d642-4cf0-806c-946315c73e6d"
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "audioUrl": "397c9f64-88ce-47de-846a-f1e8af8fe2fd"
+    }
+  ]
+}

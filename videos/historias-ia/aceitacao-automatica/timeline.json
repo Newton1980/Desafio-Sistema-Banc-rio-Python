@@ -1,0 +1,165 @@
+{
+  "shortTitle": "Aceitação Automática",
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "imageUrl": "04e78978-8408-4057-ac25-b4a35134edfe",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "imageUrl": "d8b8a4e1-7685-44f7-9e02-ac87c15ba0bf",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "imageUrl": "c2f57b1e-5a20-43a7-9004-cdeaa207aa56",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "imageUrl": "8b9a73b7-3e7e-4572-ba12-04fed8a9a286",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "imageUrl": "3cb3f7d9-4637-4ed6-a528-6c5f07767d43",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "imageUrl": "f49ee975-5e80-4b34-b63c-ea28b3df8c55",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "text": "Pergunta. Resposta. Cópia."
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "text": "O servidor recebeu a tarefa. Abriu a IA. Digitou a pergunta."
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "text": "A resposta chegou em segundos. Bem escrita. Fluente. Profissional."
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "text": "Ele copiou. Colou no documento. Assinou. Enviou."
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "text": "Ninguém verificou. Ninguém precisou entender."
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "text": "Gerar não é aprovar. Seu trabalho ainda não terminou."
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "audioUrl": "04e78978-8408-4057-ac25-b4a35134edfe"
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "audioUrl": "d8b8a4e1-7685-44f7-9e02-ac87c15ba0bf"
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "audioUrl": "c2f57b1e-5a20-43a7-9004-cdeaa207aa56"
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "audioUrl": "8b9a73b7-3e7e-4572-ba12-04fed8a9a286"
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "audioUrl": "3cb3f7d9-4637-4ed6-a528-6c5f07767d43"
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "audioUrl": "f49ee975-5e80-4b34-b63c-ea28b3df8c55"
+    }
+  ]
+}

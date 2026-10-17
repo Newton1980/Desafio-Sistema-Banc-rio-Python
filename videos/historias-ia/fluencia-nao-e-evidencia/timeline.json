@@ -1,0 +1,165 @@
+{
+  "shortTitle": "Fluência Não É Verdade",
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "imageUrl": "15594967-8e63-4ef7-a95d-2e4b7e3bcf5a",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "imageUrl": "cf7f80ee-4d1d-445b-97b6-8c15e17a4cbf",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "imageUrl": "33f32e01-fa15-4d3f-adfa-67ddfa203b88",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "imageUrl": "af52f2c8-f4ed-4a7d-b4be-a9151f83eae5",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "imageUrl": "8e209c76-6e30-404c-b700-bde3017590a1",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "imageUrl": "e0a25b04-c05a-4ac0-ae1a-45bec8988189",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "text": "A resposta parecia perfeita. Gramática impecável. Tom profissional."
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "text": "\"Conforme o Art. 17 da Lei nº...\" A frase parecia precisa."
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "text": "O artigo existia. Só que tratava de outro assunto completamente."
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "text": "Isso é confabulação. A IA apresenta conteúdo falso com confiança."
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "text": "Fluência não é evidência de verdade."
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "text": "Verifique. Especialmente: números, leis, datas, citações e referências."
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "audioUrl": "15594967-8e63-4ef7-a95d-2e4b7e3bcf5a"
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "audioUrl": "cf7f80ee-4d1d-445b-97b6-8c15e17a4cbf"
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "audioUrl": "33f32e01-fa15-4d3f-adfa-67ddfa203b88"
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "audioUrl": "af52f2c8-f4ed-4a7d-b4be-a9151f83eae5"
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "audioUrl": "8e209c76-6e30-404c-b700-bde3017590a1"
+    },
+    {
+      "startMs": 35000,
+      "endMs": 42000,
+      "audioUrl": "e0a25b04-c05a-4ac0-ae1a-45bec8988189"
+    }
+  ]
+}

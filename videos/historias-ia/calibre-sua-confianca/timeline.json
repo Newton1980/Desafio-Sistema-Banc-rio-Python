@@ -1,0 +1,139 @@
+{
+  "shortTitle": "Calibre sua Confiança",
+  "elements": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "imageUrl": "fab6a11c-0550-42c1-9269-ed937fb9afcb",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "imageUrl": "c892906d-f32a-49c9-803f-b11a6faefd0d",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "imageUrl": "f14797bb-35b5-4b94-a901-362c839a7019",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "imageUrl": "7f463fa4-5879-4924-8e35-3785b12b560a",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.0,
+          "to": 1.05,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "imageUrl": "9b8e5cfa-57a3-4588-8e42-017e3ee2b3bc",
+      "enterTransition": "blur",
+      "exitTransition": "blur",
+      "animations": [
+        {
+          "type": "scale",
+          "from": 1.05,
+          "to": 1.0,
+          "startMs": 0,
+          "endMs": 7000
+        }
+      ]
+    }
+  ],
+  "text": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "text": "\"Não dá para confiar na IA.\" — \"Confio em tudo que ela diz.\""
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "text": "Confiança profissional raramente é absoluta. Ela é calibrada."
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "text": "Sugerir títulos: tolerância alta. Fundamentar uma decisão: outro padrão."
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "text": "Quanto maior a consequência do erro, maior deve ser sua supervisão."
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "text": "Isso não é medo. É critério."
+    }
+  ],
+  "audio": [
+    {
+      "startMs": 0,
+      "endMs": 7000,
+      "audioUrl": "fab6a11c-0550-42c1-9269-ed937fb9afcb"
+    },
+    {
+      "startMs": 7000,
+      "endMs": 14000,
+      "audioUrl": "c892906d-f32a-49c9-803f-b11a6faefd0d"
+    },
+    {
+      "startMs": 14000,
+      "endMs": 21000,
+      "audioUrl": "f14797bb-35b5-4b94-a901-362c839a7019"
+    },
+    {
+      "startMs": 21000,
+      "endMs": 28000,
+      "audioUrl": "7f463fa4-5879-4924-8e35-3785b12b560a"
+    },
+    {
+      "startMs": 28000,
+      "endMs": 35000,
+      "audioUrl": "9b8e5cfa-57a3-4588-8e42-017e3ee2b3bc"
+    }
+  ]
+}
