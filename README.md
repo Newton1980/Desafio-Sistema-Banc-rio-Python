@@ -6,6 +6,10 @@ Dashboard operacional do **Centro Integrado de Comando e Controle (CICC)** do Co
 
 ---
 
+![CICC Gericinó — Dashboard Operacional](docs/screenshot.png)
+
+---
+
 ## Visão Geral
 
 O sistema provê visualização geoespacial e monitoramento operacional em tempo real do Complexo de Gericinó, incluindo:
