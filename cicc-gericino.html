@@ -197,9 +197,8 @@
 
     /*
      * #colMap vira overlay fixed: ocupa 100% da viewport abaixo do header.
-     * O valor de `top` é injetado via JS (header.offsetHeight) para garantir
-     * que o cálculo seja feito em runtime, independente de quantas linhas
-     * o header ocupa.
+     * `top` é injetado via JS (header.offsetHeight). Toda a cadeia interna
+     * usa flex explícito — sem depender de classes Tailwind do CDN.
      */
     body.immersive-mode #colMap {
       position: fixed !important;
@@ -209,6 +208,8 @@
       width: 100% !important;
       gap: 0 !important;
       z-index: 500;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
     body.immersive-mode #mapCard {
@@ -220,6 +221,9 @@
       -webkit-backdrop-filter: none !important;
       box-shadow: none !important;
       min-height: 0 !important;
+      flex: 1 1 0% !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
     body.immersive-mode #mapNavBar {
@@ -233,6 +237,13 @@
     body.immersive-mode #colMap .relative {
       border-radius: 0 !important;
       border: none !important;
+      flex: 1 1 0% !important;
+      min-height: 0 !important;
+    }
+
+    body.immersive-mode #map {
+      width: 100% !important;
+      height: 100% !important;
     }
 
     /* Cards glassmorphism flutuantes */
