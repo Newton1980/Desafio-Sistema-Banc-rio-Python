@@ -1393,8 +1393,9 @@
       map = L.map('map', {
         center: [-22.84148954670614, -43.48204419589487],
         zoom: 15,
-        zoomControl: true
+        zoomControl: false
       });
+      L.control.zoom({ position: 'bottomleft' }).addTo(map);
       window._map = map;
 
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
