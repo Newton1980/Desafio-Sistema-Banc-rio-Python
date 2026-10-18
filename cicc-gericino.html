@@ -1,0 +1,2418 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEPPEN-RJ | CICC & SISPEN — Complexo de Gericinó (KML Oficial)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: dark; }
+    input, textarea, select { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #050911;
+      color: #f1f5f9;
+      margin: 0;
+      padding: 0;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #090d16; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 4px; }
+
+    .glass {
+      background: rgba(13, 20, 36, 0.94);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(51, 65, 85, 0.65);
+    }
+
+    .submenu-btn {
+      transition: all 0.18s ease;
+    }
+    .submenu-btn.active {
+      background: rgba(37, 99, 235, 0.25);
+      border-color: rgba(96, 165, 250, 0.75);
+      color: #ffffff;
+      box-shadow: 0 2px 10px rgba(37, 99, 235, 0.25);
+    }
+
+    @keyframes radar-sweep {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .radar-sweep {
+      animation: radar-sweep 5s linear infinite;
+      transform-origin: center center;
+      pointer-events: none;
+    }
+
+    @keyframes dash-flow {
+      to { stroke-dashoffset: -28; }
+    }
+    .animated-front-vector {
+      animation: dash-flow 1.2s linear infinite;
+    }
+
+    @keyframes sectorPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .animated-sector-pulse {
+      animation: sectorPulse 3.5s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    #telemetryGrid[data-loading] .tval {
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.4s linear infinite;
+      border-radius: 3px;
+      color: transparent !important;
+      user-select: none;
+    }
+    #executiveSummaryText[data-loading] {
+      background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important;
+      background-size: 200% 100% !important;
+      animation: shimmer 1.4s linear infinite;
+      color: transparent !important;
+      border-color: transparent !important;
+      user-select: none;
+      min-height: 2.5rem;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .radar-sweep { animation: none; }
+      .animated-front-vector { animation: none; }
+      .animated-sector-pulse { animation: none; }
+      #telemetryGrid[data-loading] .tval,
+      #executiveSummaryText[data-loading] { animation: none; }
+    }
+    .audit-log-wrap { position: relative; }
+    .audit-log-wrap::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 36px;
+      border-radius: 0 0 12px 12px;
+      background: linear-gradient(to bottom, transparent, #020408);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity .25s;
+    }
+    .audit-log-wrap.has-scroll::after { opacity: 1; }
+
+    .leaflet-container { background: #040811 !important; font-family: 'Inter', sans-serif; }
+    .leaflet-popup-content-wrapper {
+      background: rgba(15, 23, 42, 0.96) !important;
+      color: #f8fafc !important;
+      border: 1px solid rgba(59, 130, 246, 0.45);
+      border-radius: 10px !important;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8) !important;
+    }
+    .leaflet-popup-tip { background: rgba(15, 23, 42, 0.96) !important; }
+
+    .kml-label-unit {
+      background: rgba(15, 23, 42, 0.92) !important;
+      border: 1px solid #38bdf8 !important;
+      color: #e0f2fe !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      padding: 1px 6px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.85) !important;
+    }
+    .kml-label-block {
+      background: rgba(59, 7, 100, 0.92) !important;
+      border: 1px solid #d946ef !important;
+      color: #fae8ff !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      padding: 1px 5px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.85) !important;
+    }
+    .front-label-tag {
+      background: rgba(2, 132, 199, 0.92) !important;
+      border: 1px solid #7dd3fc !important;
+      color: #ffffff !important;
+      font-family: 'JetBrains Mono', monospace !important;
+      font-weight: 700 !important;
+      font-size: 11px !important;
+      padding: 2px 6px !important;
+      border-radius: 4px !important;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.85) !important;
+    }
+    .btn-layer-off {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      background: rgb(15 23 42);
+      border: 1px solid rgb(51 65 85);
+      color: rgb(100 116 139);
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* ── MODO IMERSIVO (Opção A) ─────────────────────────────────── */
+    .immersive-left,
+    .immersive-right {
+      transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    body.immersive-mode .immersive-left,
+    body.immersive-mode .immersive-right {
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: 0 !important;
+      overflow: hidden;
+      opacity: 0;
+      padding: 0;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    body.immersive-mode .immersive-map {
+      grid-column: span 12 !important;
+    }
+
+    /* Cards glassmorphism flutuantes */
+    .glass-card-overlay {
+      display: none;
+      position: absolute;
+      z-index: 600;
+      background: rgba(7, 11, 24, 0.72);
+      backdrop-filter: blur(14px) saturate(1.5);
+      -webkit-backdrop-filter: blur(14px) saturate(1.5);
+      border: 1px solid rgba(148, 163, 184, 0.13);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 160px;
+      pointer-events: auto;
+    }
+
+    body.immersive-mode .glass-card-overlay {
+      display: block;
+    }
+
+    .glass-card-overlay .gc-label {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgb(100 116 139);
+      font-weight: 700;
+    }
+
+    .glass-card-overlay .gc-value {
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: #f1f5f9;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    .glass-card-overlay .gc-sub {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgb(148 163 184);
+      margin-top: 1px;
+    }
+
+    #glassCardTimeline {
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 320px;
+      max-width: 480px;
+      width: max-content;
+    }
+
+    /* Botão imersivo — anel âmbar quando ativo */
+    #btnImmersive[aria-pressed="true"] {
+      background: rgba(217, 119, 6, 0.2);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: rgb(253 230 138);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .immersive-left,
+      .immersive-right,
+      body.immersive-mode .immersive-left,
+      body.immersive-mode .immersive-right {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body class="min-h-screen xl:h-screen xl:overflow-hidden flex flex-col">
+
+  <!-- HEADER EXECUTIVO COMPACTO E DISTRIBUÍDO -->
+  <header class="glass border-b border-slate-800 px-3 py-2 flex flex-wrap items-center justify-between gap-2 z-30 shrink-0">
+    <div class="flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 via-indigo-700 to-slate-900 flex items-center justify-center border border-blue-400/40 shadow-md shrink-0">
+        <i data-lucide="shield-check" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-[10px] mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40 font-bold">SEPPEN-RJ • POLÍCIA PENAL</span>
+          <span class="text-[10px] mono text-slate-400 hidden 2xl:inline">22°50'15"S 43°28'39"W • Bangu, RJ</span>
+        </div>
+        <h1 class="text-xs sm:text-sm font-bold tracking-tight text-white">
+          Centro Integrado de Comando Climático, Infraestrutura Crítica e Bloqueio Celular — Complexo de Gericinó
+        </h1>
+      </div>
+    </div>
+
+    <!-- Controles Globais e Cenários -->
+    <div class="flex items-center gap-1.5 flex-wrap">
+      <!-- Seletor de Modo de Layout (Submenus vs Expandido) -->
+      <button onclick="toggleAllSubmenusMode()" id="btnLayoutMode" aria-label="Alternar modo de layout" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Alternar entre organização por Submenus ou Todos os Painéis Abertos">
+        <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400"></i>
+        <span id="layoutModeText">Modo: Submenus</span>
+      </button>
+
+      <button onclick="toggleImmersiveMode()" id="btnImmersive" aria-label="Maximizar visualização do mapa" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Modo imersivo: mapa expandido com cards flutuantes">
+        <i data-lucide="maximize-2" id="immersiveIcon" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span class="hidden sm:inline">Mapa Máximo</span>
+      </button>
+
+      <div role="group" aria-label="Modo de visualização" class="flex items-center gap-1 bg-slate-900/95 border border-slate-700/80 rounded-lg p-1">
+        <span class="text-[11px] mono uppercase text-slate-400 px-1 hidden sm:inline">Cenário:</span>
+        <button onclick="setScenario('real')" id="scen-real" aria-pressed="true" class="px-2 py-1.5 rounded text-[10px] font-semibold bg-emerald-600 text-white transition">Tempo Real</button>
+        <button onclick="setScenario('sp_front')" id="scen-sp" aria-pressed="false" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Frente SP (3h)</button>
+        <button onclick="setScenario('sea_storm')" id="scen-sea" aria-pressed="false" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Ressaca Mar (2h)</button>
+        <button onclick="setScenario('severe')" id="scen-severe" aria-pressed="false" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Crítico</button>
+      </div>
+
+      <button onclick="speakExecutiveBriefing()" aria-label="Resumo de Voz" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-[10px] font-semibold flex items-center gap-1 transition">
+        <i data-lucide="volume-2" class="w-3.5 h-3.5 text-indigo-300"></i>
+        <span class="hidden sm:inline">Resumo Voz</span>
+      </button>
+
+      <button onclick="toggleSecretaryModal()" aria-label="Guia da Secretária" aria-haspopup="dialog" class="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 text-[10px] font-semibold flex items-center gap-1 transition">
+        <i data-lucide="award" class="w-3.5 h-3.5 text-amber-300"></i>
+        <span class="hidden sm:inline">Guia Secretária</span>
+      </button>
+
+      <button onclick="fetchAllData(true)" aria-label="Sincronizar dados" class="px-2.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-[10px] font-semibold flex items-center gap-1 transition shadow">
+        <i data-lucide="refresh-cw" id="syncIcon" class="w-3.5 h-3.5"></i>
+        <span>Sincronizar</span>
+      </button>
+
+      <div class="text-right pl-2 border-l border-slate-800 hidden md:block">
+        <div id="clockDisplay" aria-hidden="true" class="text-xs font-bold mono text-white">00:00:00</div>
+        <div id="apiStatusBadge" role="status" aria-live="polite" class="text-[11px] mono text-emerald-400">● OPEN-METEO + DECEA</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- FAIXA EXECUTIVA DE LEITURA EM 3 SEGUNDOS (5 KPIs SEMPRE VISÍVEIS) -->
+  <section aria-label="Indicadores de estado operacional" class="bg-slate-950/95 border-b border-slate-800/90 px-3 py-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 shrink-0 z-20">
+    <div onclick="switchLeftSubmenu('clima')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-emerald-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardStage">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] mono uppercase text-slate-400 font-semibold">1. Nível Operacional</span>
+        <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
+      </div>
+      <div class="flex items-baseline justify-between gap-2 my-0.5">
+        <div id="kpiStageTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 tracking-tight mono">ESTÁGIO 1 • NORMAL</div>
+        <div id="kpiStageSub" class="text-[11px] text-slate-400 truncate">Rotina preservada</div>
+      </div>
+      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="kpiStageBar" class="h-full bg-emerald-500 transition-[width] duration-500" style="width: 25%"></div>
+      </div>
+    </div>
+
+    <div onclick="switchLeftSubmenu('frentes')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-cyan-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardEta">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] mono uppercase text-slate-400 font-semibold">2. Chegada de Chuva (ETA)</span>
+        <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
+      </div>
+      <div class="flex items-baseline justify-between gap-2 my-0.5">
+        <div id="kpiEtaTitle" aria-live="polite" class="text-xs font-extrabold text-cyan-300 mono">SEM FRENTE ATIVA</div>
+        <div id="kpiEtaSub" class="text-[11px] text-slate-400 truncate">Corredor SP / Mar limpos</div>
+      </div>
+      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="kpiEtaBar" class="h-full bg-cyan-400 transition-[width] duration-500" style="width: 12%"></div>
+      </div>
+    </div>
+
+    <div onclick="switchLeftSubmenu('autonomia')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-amber-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardLight">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] mono uppercase text-slate-400 font-semibold">3. Energia (Light S.A.)</span>
+        <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
+      </div>
+      <div class="flex items-baseline justify-between gap-2 my-0.5">
+        <div id="kpiLightTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">REDE ESTÁVEL</div>
+        <div id="kpiLightSub" class="text-[11px] text-slate-400 mono">Geradores: 48h diesel</div>
+      </div>
+      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="kpiLightBar" class="h-full bg-emerald-400 transition-[width] duration-500" style="width: 92%"></div>
+      </div>
+    </div>
+
+    <div onclick="switchLeftSubmenu('autonomia')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-blue-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardWater">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] mono uppercase text-slate-400 font-semibold">4. Água (Águas do Rio)</span>
+        <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-400"></i>
+      </div>
+      <div class="flex items-baseline justify-between gap-2 my-0.5">
+        <div id="kpiWaterTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">PRESSÃO NORMAL</div>
+        <div id="kpiWaterSub" class="text-[11px] text-slate-400 mono">Cisternas: 72h reserva</div>
+      </div>
+      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="kpiWaterBar" class="h-full bg-blue-400 transition-[width] duration-500" style="width: 95%"></div>
+      </div>
+    </div>
+
+    <div onclick="switchRightSubmenu('kml')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-fuchsia-500 col-span-2 sm:col-span-1 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardClaro">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] mono uppercase text-slate-400 font-semibold">5. Bloqueio Celular (Claro)</span>
+        <i data-lucide="radio-tower" class="w-3.5 h-3.5 text-fuchsia-400"></i>
+      </div>
+      <div class="flex items-baseline justify-between gap-2 my-0.5">
+        <div id="kpiClaroTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">3/3 ZONAS ATIVAS</div>
+        <div id="kpiClaroSub" class="text-[11px] text-slate-400 mono">Bangu 3 e Bangu 4 (100%)</div>
+      </div>
+      <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="kpiClaroBar" class="h-full bg-fuchsia-500 transition-[width] duration-500" style="width: 100%"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ÁREA CENTRAL BEM DISTRIBUÍDA (12 COLUNAS: 3 ESQUERDA + 6 MAPA + 3 DIREITA) -->
+  <main class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-3 p-3 xl:overflow-hidden">
+
+    <!-- COLUNA ESQUERDA: SUBMENUS DE MONITORAMENTO (PASSOS 1, 2 E 3) -->
+    <section aria-label="Monitoramento meteorológico e climatológico" id="colLeft" class="immersive-left xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+
+      <!-- BARRA DE SUBMENUS DA COLUNA ESQUERDA -->
+      <div id="tablist-left" role="tablist" aria-label="Submenus de monitoramento" class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1 shrink-0 border border-slate-800">
+        <button role="tab" aria-selected="true" aria-controls="panelLeft-clima" onclick="switchLeftSubmenu('clima')" id="tabLeft-clima" class="submenu-btn active px-2 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="cloud-sun-rain" class="w-4 h-4 text-blue-400"></i>
+          <span>1. Clima Local</span>
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panelLeft-frentes" onclick="switchLeftSubmenu('frentes')" id="tabLeft-frentes" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
+          <span>2. Frentes SP/Mar</span>
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panelLeft-autonomia" onclick="switchLeftSubmenu('autonomia')" id="tabLeft-autonomia" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+          <span>3. Luz, Água e RF</span>
+        </button>
+      </div>
+
+      <!-- CONTEÚDO DOS SUBMENUS DA ESQUERDA -->
+      <div class="flex-1 flex flex-col gap-2.5 xl:overflow-y-auto xl:pr-0.5">
+
+        <!-- SUBMENU 1: DIAGNÓSTICO E TELEMETRIA DE GERICINÓ -->
+        <div id="panelLeft-clima" role="tabpanel" aria-labelledby="tabLeft-clima" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-blue-400 font-bold">PASSO 1 • EPICENTRO BANGU</span>
+                <h2 class="text-xs font-bold text-white">Diagnóstico e Telemetria em Gericinó</h2>
+              </div>
+              <span id="currentRiskBadge" role="status" aria-live="polite" class="text-[10px] mono px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">RISCO BAIXO</span>
+            </div>
+
+            <p id="executiveSummaryText" data-loading aria-live="polite" aria-atomic="false" class="text-xs text-slate-200 leading-relaxed bg-slate-900/90 p-3 rounded-xl border border-slate-800 mb-3">
+              Carregando diagnóstico meteorológico de Gericinó...
+            </p>
+
+            <!-- Grade 2x3 Ampla e Legível -->
+            <div id="telemetryGrid" data-loading class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Temp</span>
+                  <i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-400"></i>
+                </div>
+                <div id="valTemp" class="tval text-base font-extrabold mono text-white mt-1">--°C</div>
+                <div id="valFeels" class="tval text-[10px] text-slate-400 mono mt-0.5">Sens: --°C</div>
+              </div>
+
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Chuva 1h</span>
+                  <i data-lucide="cloud-rain" class="w-3.5 h-3.5 text-cyan-400"></i>
+                </div>
+                <div id="valRain" class="tval text-base font-extrabold mono text-cyan-300 mt-1">0.0 mm</div>
+                <div id="valProb" class="tval text-[10px] text-slate-400 mono mt-0.5">Prob: --%</div>
+              </div>
+
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Rajada</span>
+                  <i data-lucide="wind" class="w-3.5 h-3.5 text-emerald-400"></i>
+                </div>
+                <div id="valWind" class="tval text-base font-extrabold mono text-white mt-1">-- km/h</div>
+                <div id="valDir" class="tval text-[10px] text-slate-400 mono mt-0.5">Dir: --</div>
+              </div>
+
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Umidade</span>
+                  <i data-lucide="droplet" class="w-3.5 h-3.5 text-blue-400"></i>
+                </div>
+                <div id="valHum" class="tval text-base font-extrabold mono text-white mt-1">--%</div>
+                <div class="text-[10px] text-slate-400 mono mt-0.5">Bangu/RJ</div>
+              </div>
+
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Pressão</span>
+                  <i data-lucide="gauge" class="w-3.5 h-3.5 text-purple-400"></i>
+                </div>
+                <div id="valPress" class="tval text-base font-extrabold mono text-white mt-1">---- hPa</div>
+                <div id="valPressTrend" class="tval text-[10px] text-slate-400 mono mt-0.5">Estável</div>
+              </div>
+
+              <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/90">
+                <div class="text-[10px] text-slate-400 uppercase flex items-center justify-between font-semibold">
+                  <span>Raios/CAPE</span>
+                  <i data-lucide="cloud-lightning" class="w-3.5 h-3.5 text-yellow-400"></i>
+                </div>
+                <div id="valCape" class="tval text-base font-extrabold mono text-yellow-300 mt-1">-- J/kg</div>
+                <div id="valStormRisk" class="tval text-[10px] text-slate-400 mono mt-0.5">Normal</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Previsão Horária Gericinó (Próximas 6h) -->
+          <div class="mt-3 pt-3 border-t border-slate-800/90">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[10px] mono uppercase text-slate-300 font-semibold">Previsão Horária Gericinó (Próximas 6h)</span>
+              <span class="text-[11px] mono text-cyan-400">Open-Meteo API</span>
+            </div>
+            <div id="hourlyForecastGrid" class="grid grid-cols-6 gap-1.5 text-center"></div>
+          </div>
+        </div>
+
+        <!-- SUBMENU 2: MONITORAMENTO ANTECIPADO (SENTINELAS SP / ALTO-MAR / SERRA DO PILOTO) -->
+        <div id="panelLeft-frentes" role="tabpanel" aria-labelledby="tabLeft-frentes" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-cyan-400 font-bold">PASSO 2 • ALERTA ANTECIPADO (1H A 4H)</span>
+                <h2 class="text-xs font-bold text-white">Rastreamento de Frentes (SP, Alto-Mar e Serra)</h2>
+              </div>
+              <button onclick="focusView('macro')" class="px-2 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-[11px] mono font-bold text-cyan-200">
+                Ver no Mapa
+              </button>
+            </div>
+
+            <p class="text-[11px] text-slate-300 mb-2.5 bg-slate-900/70 p-2 rounded-lg border border-slate-800">
+              Clique em qualquer estação sentinela abaixo para deslocar o mapa até o corredor da frente fria:
+            </p>
+
+            <div id="upstreamSentinelList" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- SUBMENU 3: IMPACTO E AUTONOMIA DE SERVIÇOS CRÍTICOS -->
+        <div id="panelLeft-autonomia" role="tabpanel" aria-labelledby="tabLeft-autonomia" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-amber-400 font-bold">PASSO 3 • INFRAESTRUTURA CRÍTICA</span>
+                <h2 class="text-xs font-bold text-white">Autonomia: Luz, Água e Bloqueadores RF</h2>
+              </div>
+              <span class="text-[11px] mono text-slate-400">Contingência</span>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="p-3 rounded-xl bg-slate-900/85 border border-slate-800" id="cardLight">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                    <div>
+                      <div class="text-xs font-bold text-white">Light S.A. • Subestação Bangu</div>
+                      <div class="text-[10px] text-slate-400">Alimentadores 13.8kV + Geradores Diesel</div>
+                    </div>
+                  </div>
+                  <span id="badgeLight" class="text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">NORMAL</span>
+                </div>
+                <p id="descLight" class="text-[11px] text-slate-300 mt-1.5">Rede operando sem oscilações. Rajadas dentro do limite seguro (&lt; 50 km/h).</p>
+                <div class="mt-2">
+                  <div class="flex justify-between text-[11px] mono text-slate-400 mb-1">
+                    <span>Integridade da Rede Elétrica</span>
+                    <span id="meterLightLabel" class="text-emerald-400">94% • Reserva 48h</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div id="meterLightBar" class="h-full bg-emerald-400 transition-[width] duration-500" style="width: 94%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-900/85 border border-slate-800" id="cardWater">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="droplets" class="w-4 h-4 text-blue-400"></i>
+                    <div>
+                      <div class="text-xs font-bold text-white">Águas do Rio • Sistema Guandu</div>
+                      <div class="text-[10px] text-slate-400">Adutora Bangu + Bombas Elétricas Internas</div>
+                    </div>
+                  </div>
+                  <span id="badgeWater" class="text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">NORMAL</span>
+                </div>
+                <p id="descWater" class="text-[11px] text-slate-300 mt-1.5">Abastecimento normal e baixa turbidez no Rio Guandu.</p>
+                <div class="mt-2">
+                  <div class="flex justify-between text-[11px] mono text-slate-400 mb-1">
+                    <span>Reserva Hídrica de Cisternas</span>
+                    <span id="meterWaterLabel" class="text-blue-400">96% • Reserva 72h</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div id="meterWaterBar" class="h-full bg-blue-400 transition-[width] duration-500" style="width: 96%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-900/85 border border-slate-800" id="cardClaro">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <i data-lucide="radio-tower" class="w-4 h-4 text-fuchsia-400"></i>
+                    <div>
+                      <div class="text-xs font-bold text-white">Claro S.A. / CICC • Bloqueio RF</div>
+                      <div class="text-[10px] text-slate-400">3 Polígonos KML (Bangu 3 GC e Bangu 4 JL)</div>
+                    </div>
+                  </div>
+                  <span id="badgeClaro" class="text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">100% ATIVO</span>
+                </div>
+                <p id="descClaro" class="text-[11px] text-slate-300 mt-1.5">Torres de bloqueio operando com potência nominal e Nobreak carregado.</p>
+                <div class="mt-2">
+                  <div class="flex justify-between text-[11px] mono text-slate-400 mb-1">
+                    <span>Eficiência de Bloqueio Celular (ERBs)</span>
+                    <span id="meterClaroLabel" class="text-fuchsia-400">100% • 3/3 Zonas</span>
+                  </div>
+                  <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div id="meterClaroBar" class="h-full bg-fuchsia-500 transition-[width] duration-500" style="width: 100%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COLUNA CENTRAL: MAPA SATÉLITE KML + BARRAS ACOPLADAS DE RADAR E LEGENDA -->
+    <section aria-label="Mapa operacional e radar meteorológico" id="colMap" class="immersive-map xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
+      <div class="glass rounded-xl p-2.5 flex-1 flex flex-col border border-slate-800 min-h-[300px] xl:min-h-[540px]">
+
+        <!-- Barra Superior do Mapa: Navegação KML + Camadas -->
+        <div class="flex flex-wrap items-center justify-between gap-x-1.5 gap-y-1.5 pb-2 border-b border-slate-800/90 mb-2 shrink-0">
+          <div class="flex items-center gap-x-1 gap-y-1 flex-wrap">
+            <button onclick="focusView('complexo')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-700/30 border border-emerald-500/40 text-[10px] font-bold text-emerald-200 transition">
+              Perímetro Gericinó
+            </button>
+            <button onclick="focusView('unidades')" class="px-2.5 py-1 rounded-lg bg-blue-500/20 hover:bg-blue-700/30 border border-blue-500/40 text-[10px] font-bold text-blue-200 transition">
+              Bangu 3 e 4
+            </button>
+            <button onclick="focusView('bangu4')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-indigo-300 transition">
+              Bangu 4 (JL)
+            </button>
+            <button onclick="focusView('bangu3')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-rose-300 transition">
+              Bangu 3 (GC)
+            </button>
+            <button onclick="focusView('bloqueios')" class="px-2 py-1 rounded-lg bg-fuchsia-950/80 hover:bg-fuchsia-900 border border-fuchsia-500/40 text-[10px] font-semibold text-fuchsia-200 transition">
+              3 Bloqueios
+            </button>
+            <button onclick="focusView('macro')" class="px-2.5 py-1 rounded-lg bg-cyan-950 hover:bg-cyan-900 border border-cyan-400/50 text-[10px] font-bold text-cyan-200 transition">
+              🌊 Corredor SP / Mar
+            </button>
+          </div>
+
+          <div class="flex items-center gap-x-1 gap-y-1 flex-wrap">
+            <button onclick="toggleLayer('perimeter')" id="btnLayerPerim" class="px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[10px] font-semibold">Perímetro</button>
+            <button onclick="toggleLayer('units')" id="btnLayerUnits" class="px-2 py-1 rounded bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-[10px] font-semibold">Unidades</button>
+            <button onclick="toggleLayer('jamming')" id="btnLayerJam" class="px-2 py-1 rounded bg-fuchsia-500/20 border border-fuchsia-500/50 text-fuchsia-300 text-[10px] font-semibold">Bloqueios</button>
+            <button onclick="toggleLayer('fronts')" id="btnLayerFronts" class="px-2 py-1 rounded bg-sky-500/25 border border-sky-400/60 text-sky-200 text-[10px] font-bold">Frentes</button>
+            <button onclick="toggleLayer('radar')" id="btnLayerRadar" class="px-2 py-1 rounded bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 text-[10px] font-semibold">Radar</button>
+          </div>
+        </div>
+
+        <!-- Container Limpo do Mapa Satélite (Sem caixas grandes tampando os polígonos) -->
+        <div class="relative flex-1 rounded-xl overflow-hidden border border-slate-800 min-h-[260px] xl:min-h-[380px]">
+          <div id="map" class="w-full h-full min-h-[260px] xl:min-h-[380px]"></div>
+
+          <!-- CARD GLASS 1: Status Operacional (topo esquerdo) -->
+          <div id="glassCardStatus" class="glass-card-overlay" style="top:12px;left:12px;">
+            <div class="gc-label">Status Operacional</div>
+            <div class="gc-value" id="gcRisk">RISCO BAIXO</div>
+            <div class="gc-sub" id="gcStage">ESTÁGIO 1 • NORMAL</div>
+          </div>
+
+          <!-- CARD GLASS 2: Telemetria Crítica (topo direito) -->
+          <div id="glassCardTelemetry" class="glass-card-overlay" style="top:12px;right:12px;text-align:right;">
+            <div class="gc-label" style="margin-bottom:4px;">Telemetria Crítica</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
+              <div>
+                <div class="gc-label">Temp</div>
+                <div class="gc-value" id="gcTemp">--°C</div>
+              </div>
+              <div>
+                <div class="gc-label">Chuva 1h</div>
+                <div class="gc-value" id="gcRain" style="color:rgb(103 232 249)">0.0 mm</div>
+              </div>
+              <div>
+                <div class="gc-label">Rajada</div>
+                <div class="gc-value" id="gcWind">-- km/h</div>
+              </div>
+              <div>
+                <div class="gc-label">Umidade</div>
+                <div class="gc-value" id="gcHum">--%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD GLASS 3: Linha do Tempo Radar (borda inferior) -->
+          <div id="glassCardTimeline" class="glass-card-overlay" style="bottom:12px;left:50%;transform:translateX(-50%);min-width:320px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <div class="gc-label" style="white-space:nowrap;">Radar</div>
+              <span id="gcRadarLabel" class="gc-value" style="font-size:11px;">AGORA (T+0)</span>
+              <input id="gcRadarSlider" type="range" min="0" max="10" value="5"
+                style="flex:1;min-width:120px;accent-color:#22d3ee;cursor:pointer;height:4px;background:#1e293b;border-radius:4px;"
+                aria-label="Radar — linha do tempo (modo imersivo)"
+                oninput="document.getElementById('radarTimelineSlider').value=this.value;document.getElementById('radarTimelineSlider').dispatchEvent(new Event('input'))">
+              <span class="gc-sub" style="white-space:nowrap;">+2h Prev</span>
+            </div>
+          </div>
+
+          <!-- Radar Varredura Overlay Suave -->
+          <div id="radarSweepOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center z-[400] opacity-20">
+            <div class="w-[320px] h-[320px] rounded-full border border-emerald-500/30 relative radar-sweep">
+              <div class="w-1/2 h-1/2 bg-gradient-to-br from-emerald-500/20 to-transparent rounded-tl-full"></div>
+            </div>
+          </div>
+
+          <!-- Selo Compacto Superior Direito (Vetor do Vento) -->
+          <div class="absolute top-2.5 right-2.5 z-[500] glass px-2.5 py-1 rounded-lg border border-slate-700/80 text-right pointer-events-none">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="mapWindVector" class="text-[11px] font-bold mono text-cyan-300">SO → NE (22 km/h)</span>
+              <span class="text-slate-500">|</span>
+              <span id="mapFrontEta" class="text-[10px] mono text-emerald-400">Sem frente severa</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BARRA ACOPLADA ABAIXO DO MAPA: PLAYER DE ANIMAÇÃO DO RADAR + LEGENDA KML/dBZ -->
+        <div class="mt-2 pt-2 border-t border-slate-800/90 flex flex-col gap-1.5 shrink-0">
+          <!-- Linha 1: Player do Radar e Deslocamento de Frentes -->
+          <div class="bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2">
+              <button onclick="toggleRadarAnimation()" id="btnPlayRadar" aria-pressed="true" aria-label="Animação de frentes meteorológicas" class="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold flex items-center gap-1 shadow">
+                <span id="playRadarIcon">⏸</span>
+                <span id="playRadarText">Animando Frentes</span>
+              </button>
+              <span id="radarFrameLabel" class="text-[10px] mono font-bold text-cyan-300">AGORA (T+0 min)</span>
+              <span id="radarTimestamp" class="text-[11px] mono text-slate-400 hidden sm:inline">• API REDEMET DECEA + RainViewer</span>
+            </div>
+
+            <div class="flex-1 min-w-[140px] max-w-xs flex items-center gap-2">
+              <span class="text-[11px] mono text-slate-400">-2h</span>
+              <input id="radarTimelineSlider" type="range" min="0" max="10" value="5" aria-label="Linha do tempo do radar" aria-valuetext="Frame 6 de 11" class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+              <span class="text-[11px] mono text-amber-300">+2h (Prev)</span>
+            </div>
+
+            <div class="flex items-center gap-1.5">
+              <span class="text-[11px] mono text-slate-400">Opacidade:</span>
+              <input id="radarOpacitySlider" type="range" min="20" max="95" value="65" aria-label="Opacidade do radar" aria-valuetext="65%" class="w-16 accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+            </div>
+          </div>
+
+          <!-- Linha 2: Legenda Horizontal Limpa (Cores KML + Escala dBZ) -->
+          <div class="px-2 py-1 flex flex-wrap items-center justify-between gap-2 text-[10px]">
+            <div class="flex items-center gap-3 flex-wrap">
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-2 rounded-sm border-2 border-[#4caf50] bg-[#26a69a]/35 inline-block"></span>
+                <span class="text-slate-300 font-medium">Perímetro Gericinó (22 pts)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-2 rounded-sm border-2 border-[#5c6bc0] bg-[#5c6bc0]/35 inline-block"></span>
+                <span class="text-slate-300 font-medium">Bangu 4 JL</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-2 rounded-sm border-2 border-[#ef5350] bg-[#ef5350]/35 inline-block"></span>
+                <span class="text-slate-300 font-medium">Bangu 3 GC</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3 h-2 rounded-sm border-2 border-[#ab47bc] bg-[#ab47bc]/40 inline-block"></span>
+                <span class="text-slate-300 font-medium">3 Áreas Bloqueadas (Claro)</span>
+              </span>
+            </div>
+
+            <div class="flex items-center gap-1">
+              <span class="text-[11px] mono text-sky-300 font-bold mr-1">▲▲ Frente Fria</span>
+              <span class="text-[8px] mono px-1.5 py-0.5 rounded bg-emerald-500/25 text-emerald-200">20dBZ</span>
+              <span class="text-[8px] mono px-1.5 py-0.5 rounded bg-yellow-500/30 text-yellow-200">35dBZ</span>
+              <span class="text-[8px] mono px-1.5 py-0.5 rounded bg-orange-500/35 text-orange-200">45dBZ</span>
+              <span class="text-[8px] mono px-1.5 py-0.5 rounded bg-rose-600/45 text-white">55+dBZ</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COLUNA DIREITA: SUBMENUS DE GEOMETRIAS KML, ACIONAMENTOS E LOG (PASSOS 4 A 7) -->
+    <section aria-label="Acionamento operacional e registro de eventos" id="colRight" class="immersive-right xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+
+      <!-- BARRA DE SUBMENUS DA COLUNA DIREITA -->
+      <div id="tablist-right" role="tablist" aria-label="Submenus de acionamento e log" class="glass rounded-xl p-1.5 grid grid-cols-4 gap-1 shrink-0 border border-slate-800">
+        <button role="tab" aria-selected="true" aria-controls="panelRight-kml" onclick="switchRightSubmenu('kml')" id="tabRight-kml" class="submenu-btn active px-1.5 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="map-pin" class="w-4 h-4 text-fuchsia-400"></i>
+          <span>4. KML (6)</span>
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panelRight-externo" onclick="switchRightSubmenu('externo')" id="tabRight-externo" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="phone-forwarded" class="w-4 h-4 text-amber-400"></i>
+          <span>5. Externo</span>
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panelRight-interno" onclick="switchRightSubmenu('interno')" id="tabRight-interno" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
+          <span>6. SEPPEN</span>
+        </button>
+        <button role="tab" aria-selected="false" aria-controls="panelRight-log" onclick="switchRightSubmenu('log')" id="tabRight-log" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+          <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
+          <span>7. Diário</span>
+        </button>
+      </div>
+
+      <!-- CONTEÚDO DOS SUBMENUS DA DIREITA -->
+      <div class="flex-1 flex flex-col gap-2.5 xl:overflow-y-auto xl:pl-0.5">
+
+        <!-- SUBMENU 4: INVENTÁRIO KML E STATUS DAS 3 ÁREAS DE BLOQUEIO -->
+        <div id="panelRight-kml" role="tabpanel" aria-labelledby="tabRight-kml" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-fuchsia-400 font-bold">PASSO 4 • GOOGLE EARTH KML</span>
+                <h2 class="text-xs font-bold text-white">Geometrias KML e Zonas de Bloqueio</h2>
+              </div>
+              <span class="text-[11px] mono text-slate-400">Clique p/ Focar</span>
+            </div>
+            <div id="kmlElementsList" class="space-y-2"></div>
+          </div>
+        </div>
+
+        <!-- SUBMENU 5: ACIONAMENTO EXTERNO (CONCESSIONÁRIAS) -->
+        <div id="panelRight-externo" role="tabpanel" aria-labelledby="tabRight-externo" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-amber-300 font-bold">PASSO 5 • CONCESSIONÁRIAS</span>
+                <h2 class="text-xs font-bold text-white">Acionamento Externo (WhatsApp Oficial)</h2>
+              </div>
+              <span class="text-[11px] mono text-slate-400">1-Clique</span>
+            </div>
+
+            <div class="space-y-2.5">
+              <div class="p-3 rounded-xl bg-slate-900/90 border border-amber-500/35">
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="text-xs font-bold text-amber-300">⚡ Light S.A. • Grandes Clientes</div>
+                  <span class="text-[11px] mono text-amber-200/80">13.8kV Bangu</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mb-2.5">Prioridade de religamento da Subestação Gericinó e suporte a geradores.</p>
+                <div class="flex items-center gap-2">
+                  <button onclick="openProtocolModal('light')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-slate-200 border border-slate-700">Ver Protocolo</button>
+                  <button onclick="openProtocolModal('light')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-[10px] font-bold text-white flex items-center justify-center gap-1">
+                    <i data-lucide="send" class="w-3 h-3"></i> WhatsApp Light
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-900/90 border border-blue-500/35">
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="text-xs font-bold text-blue-300">💧 Águas do Rio • Operação Bangu</div>
+                  <span class="text-[11px] mono text-blue-200/80">ETA Guandu</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mb-2.5">Estabilização de pressão na adutora Bangu e envio de caminhões-pipa.</p>
+                <div class="flex items-center gap-2">
+                  <button onclick="openProtocolModal('aguas')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-slate-200 border border-slate-700">Ver Protocolo</button>
+                  <button onclick="openProtocolModal('aguas')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-[10px] font-bold text-white flex items-center justify-center gap-1">
+                    <i data-lucide="send" class="w-3 h-3"></i> WhatsApp Águas
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl bg-slate-900/90 border border-fuchsia-500/35">
+                <div class="flex items-center justify-between mb-1.5">
+                  <div class="text-xs font-bold text-fuchsia-300">📡 Claro S.A. / CICC • Bloqueio RF</div>
+                  <span class="text-[11px] mono text-fuchsia-200/80">3 Zonas KML</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mb-2.5">Compensação de atenuação por chuva e revisão de Nobreaks em Bangu 3 e 4.</p>
+                <div class="flex items-center gap-2">
+                  <button onclick="openProtocolModal('claro')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-slate-200 border border-slate-700">Ver Protocolo</button>
+                  <button onclick="openProtocolModal('claro')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-[10px] font-bold text-white flex items-center justify-center gap-1">
+                    <i data-lucide="send" class="w-3 h-3"></i> WhatsApp Claro
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMENU 6: ACIONAMENTO INTERNO SEPPEN-RJ -->
+        <div id="panelRight-interno" role="tabpanel" aria-labelledby="tabRight-interno" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-indigo-300 font-bold">PASSO 6 • PRONTA-RESPOSTA INTERNA</span>
+                <h2 class="text-xs font-bold text-white">Acionamento Interno Polícia Penal</h2>
+              </div>
+              <span class="text-[11px] mono text-slate-400">SEPPEN-RJ</span>
+            </div>
+
+            <div class="space-y-3">
+              <div class="p-3.5 rounded-xl bg-slate-900/90 border border-indigo-500/35">
+                <div class="text-xs font-bold text-indigo-300 mb-1">🛠️ Engenharia e Manutenção SEPPEN</div>
+                <p class="text-[11px] text-slate-300 mb-3">Partida preventiva nos Grupos Geradores de Bangu 3 e Bangu 4, aferição de diesel (48h) e travamento de cisternas (72h).</p>
+                <div class="flex items-center gap-2">
+                  <button onclick="openProtocolModal('engenharia')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-slate-200 border border-slate-700">Ver Ordem</button>
+                  <button onclick="openProtocolModal('engenharia')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-[10px] font-bold text-white flex items-center justify-center gap-1">
+                    <i data-lucide="send" class="w-3 h-3"></i> Acionar Engenharia
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-xl bg-slate-900/90 border border-purple-500/35">
+                <div class="text-xs font-bold text-purple-300 mb-1">🛡️ GSI / SOE e Direções (Bangu 3 e 4)</div>
+                <p class="text-[11px] text-slate-300 mb-3">Reforço de vigilância nas muralhas do perímetro KML, suspensão de movimentações externas e varredura RF.</p>
+                <div class="flex items-center gap-2">
+                  <button onclick="openProtocolModal('seguranca')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-[10px] font-semibold text-slate-200 border border-slate-700">Ver Ordem</button>
+                  <button onclick="openProtocolModal('seguranca')" aria-haspopup="dialog" class="flex-1 py-1.5 rounded-lg bg-purple-600 hover:bg-purple-700 text-[10px] font-bold text-white flex items-center justify-center gap-1">
+                    <i data-lucide="send" class="w-3 h-3"></i> Acionar GSI / SOE
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SUBMENU 7: DIÁRIO OFICIAL DE EVENTOS (CICC) -->
+        <div id="panelRight-log" role="tabpanel" aria-labelledby="tabRight-log" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+          <div class="flex-1 flex flex-col">
+            <div class="flex items-center justify-between mb-2.5">
+              <div>
+                <span class="text-[10px] mono uppercase text-emerald-400 font-bold">PASSO 7 • AUDITORIA OFICIAL</span>
+                <h2 class="text-xs font-bold text-white">Diário Oficial de Eventos (CICC)</h2>
+              </div>
+              <button onclick="exportAuditReport()" class="px-2.5 py-1 rounded bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/40 text-[10px] mono font-bold text-blue-300">
+                Exportar .TXT
+              </button>
+            </div>
+            <div class="audit-log-wrap flex-1">
+              <div id="auditLogList" role="log" aria-label="Diário de eventos CICC" aria-live="polite" aria-atomic="false" class="space-y-1.5 text-[10px] mono text-slate-300 overflow-y-auto max-h-80 pr-1 bg-slate-950/70 p-2.5 rounded-xl border border-slate-800"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <!-- MODAL DE PROTOCOLO OFICIAL -->
+  <div id="protocolModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="if(event.target===this)closeProtocolModal()" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="glass rounded-2xl max-w-xl w-full p-5 border border-slate-700 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div>
+          <span class="text-[10px] mono uppercase px-2 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/40">DESPACHO OFICIAL SEPPEN-RJ</span>
+          <h3 id="modalTitle" class="text-base font-bold text-white mt-1">Protocolo de Acionamento</h3>
+        </div>
+        <button onclick="closeProtocolModal()" aria-label="Fechar protocolo" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="mt-3">
+        <label for="modalPhoneInput" class="text-[10px] mono uppercase text-slate-400">Telefone / WhatsApp de Destino (Opcional — deixe em branco para escolher na agenda):</label>
+        <input id="modalPhoneInput" type="text" inputmode="numeric" autocomplete="tel" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Ex: 5521999999999" class="w-full mt-1 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-xs mono text-white focus:outline-none focus:border-blue-500" />
+      </div>
+
+      <div class="mt-3">
+        <label for="modalMessageText" class="text-[10px] mono uppercase text-slate-400">Mensagem Oficial Padronizada com Coordenadas KML:</label>
+        <textarea id="modalMessageText" rows="9" class="w-full mt-1 p-3 rounded-lg bg-slate-950 border border-slate-800 text-xs mono text-slate-200 focus:outline-none focus:border-blue-500 resize-none"></textarea>
+      </div>
+
+      <div class="mt-4 flex flex-wrap items-center justify-end gap-2">
+        <button id="btnCopyProtocol" onclick="copyProtocolText()" class="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar Texto
+        </button>
+        <button onclick="confirmWhatsAppSend()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-xs font-bold text-white flex items-center gap-1.5 shadow-lg">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i> Enviar via WhatsApp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: GUIA EXECUTIVO PARA A SECRETÁRIA SEPPEN-RJ -->
+  <div id="secretaryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="if(event.target===this)toggleSecretaryModal()" role="dialog" aria-modal="true" aria-labelledby="secretaryModalTitle">
+    <div class="glass rounded-2xl max-w-2xl w-full p-5 border border-amber-500/40 shadow-2xl">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div class="flex items-center gap-2">
+          <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
+          <div>
+            <span class="text-[10px] mono uppercase text-amber-300 font-bold">FLUXO EXECUTIVO • LEITURA EM 3 SEGUNDOS</span>
+            <h3 id="secretaryModalTitle" class="text-base font-bold text-white">Como o Painel Organiza Todas as Informações do Complexo de Gericinó</h3>
+          </div>
+        </div>
+        <button onclick="toggleSecretaryModal()" aria-label="Fechar guia" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="mt-3 space-y-2.5 text-xs text-slate-200 leading-relaxed">
+        <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-emerald-400 mb-1">1. Faixa Superior Clicável (5 Indicadores de Decisão Imediata)</div>
+          Mostra o **Estágio Operacional**, **Tempo Estimado de Chegada de Chuva (ETA)** vinda de São Paulo ou Alto-Mar, e as barras de autonomia de **Energia (Light)**, **Água (Águas do Rio)** e **Bloqueadores Celulares (Claro)**. Clicar em qualquer indicador abre imediatamente o submenu correspondente.
+        </div>
+        <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-cyan-400 mb-1">2. Submenus Laterais + Modo Expandido</div>
+          A coluna esquerda divide **1. Clima Local**, **2. Frentes SP/Mar** e **3. Luz, Água e RF** sem cortar informações. A coluna direita divide **4. Geometrias KML**, **5. Concessionárias**, **6. Polícia Penal** e **7. Diário CICC**. Caso deseje ver tudo aberto de uma vez, basta clicar em **"Modo: Submenus"** no topo.
+        </div>
+        <div class="p-3 rounded-lg bg-slate-900/90 border border-slate-800">
+          <div class="font-bold text-yellow-400 mb-1">3. Mapa Central Desobstruído com Player Doppler Acoplado</div>
+          O player de animação das frentes frias e a legenda KML ficam acoplados abaixo do mapa para deixar 100% da imagem de satélite livre sobre o Complexo de Gericinó.
+        </div>
+      </div>
+
+      <div class="mt-4 flex justify-end">
+        <button onclick="toggleSecretaryModal()" class="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs">
+          Entendido • Voltar ao Painel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================================
+    // COORDENADAS E ESTILOS 100% IMUTÁVEIS DO KML OFICIAL (Object.freeze):
+    // Document id="12dTUKQCidpNuCd5ahfI7KIfPWVZJGODt"
+    // Nome: "Complexo de Gericinó e Unidades Bloqueadas"
+    // ============================================================================
+    const REDEMET_API_KEY = "Zne1E6KPpATmx57tFTIbgnGEMVsQyXd7";
+
+    const KML_ORIGINAL = Object.freeze({
+      projectId: "12dTUKQCidpNuCd5ahfI7KIfPWVZJGODt",
+      perimeter: Object.freeze({
+        id: "0C317EEDAF403AD017C9",
+        name: "Complexo Prisional de Gericinó",
+        styleUrl: "#__managed_style_043D36C59B4281990D6B",
+        strokeColor: "#388e3c", // KML ff3c8e38
+        fillColor: "#26a69a",   // KML 409aa626
+        lookAt: { lat: -22.84148954670614, lon: -43.48204419589487, range: 2133.17 },
+        coords: Object.freeze([
+          [-22.83768738095135, -43.48220773545122],
+          [-22.83882762238992, -43.48193888788395],
+          [-22.84594432902369, -43.48734543018945],
+          [-22.84700526345527, -43.48608267454755],
+          [-22.84792226845144, -43.48688025705905],
+          [-22.84820689842124, -43.48676657119272],
+          [-22.84875274641762, -43.48726917071959],
+          [-22.84981197127124, -43.48590989398079],
+          [-22.84202330864495, -43.4803700247938],
+          [-22.84282916441721, -43.47988097789089],
+          [-22.84204508147736, -43.47770809655493],
+          [-22.84115833395993, -43.47676686591047],
+          [-22.84052635383956, -43.47499569737903],
+          [-22.83739596649021, -43.47608394184218],
+          [-22.83627892703072, -43.47654319170898],
+          [-22.83622771244232, -43.47707090059102],
+          [-22.83676533178187, -43.47847621534637],
+          [-22.83703777758044, -43.47930697914244],
+          [-22.83648765320875, -43.48011057998673],
+          [-22.83659714731873, -43.48119149811478],
+          [-22.83732542654904, -43.48083230011432],
+          [-22.83768738095135, -43.48220773545122]
+        ])
+      }),
+      units: Object.freeze([
+        {
+          key: "bangu4",
+          polyId: "0E9765F365403AD3CE77",
+          pinId: "09F4AD6DA9403ADB47C6",
+          pinIdAlt: "085866B5CF403AE087BB",
+          name: "Bangu 4 JL",
+          fullName: "Penitenciária Jonas Lopes de Carvalho Bangu IV",
+          strokeColor: "#5c6bc0", // KML ff9f3f30 / 40c06b5c
+          fillColor: "#5c6bc0",
+          pin: [-22.83638629889236, -43.47740629367053],
+          alt: 37.92,
+          tooltipDir: "top",
+          tooltipOffset: [0, -12],
+          coords: [
+            [-22.83657719213114, -43.47797405400239],
+            [-22.83688752623486, -43.47811522326084],
+            [-22.83795508387688, -43.47768122574757],
+            [-22.83767203508243, -43.47688760141818],
+            [-22.83737292702843, -43.4760941606356],
+            [-22.83628472899504, -43.47654810319965],
+            [-22.83622806942343, -43.47708074531387],
+            [-22.83657719213114, -43.47797405400239]
+          ]
+        },
+        {
+          key: "bangu3",
+          polyId: "0517582506403AD644E0",
+          pinId: "0463D424BA403AE0CF70",
+          name: "Bangu 3  GC",
+          fullName: "Penitenciária Gabriel Ferreira de Castilho (Bangu III-B)",
+          strokeColor: "#ef5350", // KML ff5053ef
+          fillColor: "#ef5350",
+          pin: [-22.83876868487748, -43.47872878310114],
+          alt: 35.79,
+          tooltipDir: "left",
+          tooltipOffset: [-12, 0],
+          coords: [
+            [-22.83834849053702, -43.47886045496332],
+            [-22.83849464426166, -43.47868403970004],
+            [-22.83913141441972, -43.4794281764667],
+            [-22.83973929860145, -43.47918792157279],
+            [-22.83984881631865, -43.47907513117556],
+            [-22.83877314772462, -43.47781977640871],
+            [-22.83831887827056, -43.47829667836996],
+            [-22.83828317552316, -43.47841672542808],
+            [-22.83809693779682, -43.47854059411461],
+            [-22.83834849053702, -43.47886045496332]
+          ]
+        }
+      ]),
+      blockingAreas: Object.freeze([
+        {
+          key: "block_jl1",
+          polyId: "017F0B63C4403AE62849",
+          pinId: "07CFCC5D9C403AE76FD0",
+          polyName: "Area de Bloqueio 2",
+          pinName: "Area Bloqueada 1 JL",
+          unitRef: "Bangu 4 (Setor Norte)",
+          strokeColor: "#ab47bc", // KML ffbc47ab
+          fillColor: "#ab47bc",
+          pin: [-22.83679317507821, -43.47734761040726],
+          alt: 37.81,
+          tooltipDir: "right",
+          tooltipOffset: [10, 0],
+          coords: [
+            [-22.83670430633135, -43.47779970893932],
+            [-22.83702855759438, -43.47766283847199],
+            [-22.83675089667387, -43.47691938819464],
+            [-22.83642048369461, -43.47705949081914],
+            [-22.83670430633135, -43.47779970893932]
+          ]
+        },
+        {
+          key: "block_jl2",
+          polyId: "0FE34A72C5403AE582AF",
+          pinId: "0671F6E5CD403AE6AA37",
+          polyName: "Area de Bloqueio",
+          pinName: "Area Bloqueada 2 JL",
+          unitRef: "Bangu 4 (Setor Sul)",
+          strokeColor: "#ab47bc", // KML ffbc47ab
+          fillColor: "#ab47bc",
+          pin: [-22.83741222052612, -43.47707778654251],
+          alt: 37.81,
+          tooltipDir: "right",
+          tooltipOffset: [10, 4],
+          coords: [
+            [-22.8373283808703, -43.47753200157667],
+            [-22.83765220028119, -43.47739536014623],
+            [-22.83737462994693, -43.47666022798417],
+            [-22.83703847707362, -43.47679649225717],
+            [-22.8373283808703, -43.47753200157667]
+          ]
+        },
+        {
+          key: "block_gc1",
+          polyId: "06D2ED6C11403AE49321",
+          pinId: "04F8745453403AE9FEC1",
+          polyName: "Area Bloqueada",
+          pinName: "Área Bloqueada",
+          unitRef: "Bangu 3 (Gabriel Castilho)",
+          strokeColor: "#ab47bc", // KML ffbc47ab
+          fillColor: "#ab47bc",
+          pin: [-22.83895264692888, -43.47853012252818],
+          alt: 35.93,
+          tooltipDir: "bottom",
+          tooltipOffset: [0, 10],
+          coords: [
+            [-22.83902142375553, -43.47896350744847],
+            [-22.8390217233521, -43.47895098003674],
+            [-22.83929595550492, -43.47869575050769],
+            [-22.83879759579043, -43.47813305542839],
+            [-22.83854049396645, -43.47838824018324],
+            [-22.83902142375553, -43.47896350744847]
+          ]
+        }
+      ])
+    });
+
+    // ============================================================================
+    // CONTROLE DE SUBMENUS (UI/UX DISTRIBUÍDA)
+    // ============================================================================
+    let allSubmenusExpanded = false;
+
+    function switchLeftSubmenu(tab) {
+      if (allSubmenusExpanded) return;
+      ['clima', 'frentes', 'autonomia'].forEach(k => {
+        const panel = document.getElementById(`panelLeft-${k}`);
+        const btn = document.getElementById(`tabLeft-${k}`);
+        if (k === tab) {
+          panel.classList.remove('hidden');
+          panel.classList.add('flex');
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+        } else {
+          panel.classList.add('hidden');
+          panel.classList.remove('flex');
+          btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    function switchRightSubmenu(tab) {
+      if (allSubmenusExpanded) return;
+      ['kml', 'externo', 'interno', 'log'].forEach(k => {
+        const panel = document.getElementById(`panelRight-${k}`);
+        const btn = document.getElementById(`tabRight-${k}`);
+        if (k === tab) {
+          panel.classList.remove('hidden');
+          panel.classList.add('flex');
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+        } else {
+          panel.classList.add('hidden');
+          panel.classList.remove('flex');
+          btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
+        }
+      });
+    }
+
+    function toggleAllSubmenusMode() {
+      allSubmenusExpanded = !allSubmenusExpanded;
+      const label = document.getElementById('layoutModeText');
+      document.getElementById('btnLayoutMode').setAttribute('aria-pressed', String(allSubmenusExpanded));
+      if (allSubmenusExpanded) {
+        label.textContent = 'Modo: Tudo Aberto';
+        ['clima', 'frentes', 'autonomia'].forEach(k => {
+          document.getElementById(`panelLeft-${k}`).classList.remove('hidden');
+          document.getElementById(`panelLeft-${k}`).classList.add('flex');
+          const btn = document.getElementById(`tabLeft-${k}`);
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+        });
+        ['kml', 'externo', 'interno', 'log'].forEach(k => {
+          document.getElementById(`panelRight-${k}`).classList.remove('hidden');
+          document.getElementById(`panelRight-${k}`).classList.add('flex');
+          const btn = document.getElementById(`tabRight-${k}`);
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+        });
+      } else {
+        label.textContent = 'Modo: Submenus';
+        switchLeftSubmenu('clima');
+        switchRightSubmenu('kml');
+      }
+    }
+
+    // ============================================================================
+    // MODO IMERSIVO — toggle mapa expandido com cards glassmorphism
+    // ============================================================================
+    let _immersiveActive = false;
+
+    function _syncGlassCards() {
+      const risk = document.getElementById('currentRiskBadge');
+      const stage = document.getElementById('kpiStageTitle');
+      const temp = document.getElementById('valTemp');
+      const rain = document.getElementById('valRain');
+      const wind = document.getElementById('valWind');
+      const hum  = document.getElementById('valHum');
+      if (risk)  document.getElementById('gcRisk').textContent  = risk.textContent;
+      if (stage) document.getElementById('gcStage').textContent = stage.textContent;
+      if (temp)  document.getElementById('gcTemp').textContent  = temp.textContent;
+      if (rain)  document.getElementById('gcRain').textContent  = rain.textContent;
+      if (wind)  document.getElementById('gcWind').textContent  = wind.textContent;
+      if (hum)   document.getElementById('gcHum').textContent   = hum.textContent;
+      const radarLabel = document.getElementById('radarFrameLabel');
+      if (radarLabel) document.getElementById('gcRadarLabel').textContent = radarLabel.textContent;
+      const slider = document.getElementById('radarTimelineSlider');
+      const gcSlider = document.getElementById('gcRadarSlider');
+      if (slider && gcSlider) gcSlider.value = slider.value;
+    }
+
+    function toggleImmersiveMode() {
+      _immersiveActive = !_immersiveActive;
+      const btn = document.getElementById('btnImmersive');
+      const icon = document.getElementById('immersiveIcon');
+      btn.setAttribute('aria-pressed', String(_immersiveActive));
+      if (_immersiveActive) {
+        document.body.classList.add('immersive-mode');
+        if (icon) { icon.setAttribute('data-lucide', 'minimize-2'); lucide.createIcons(); }
+        btn.title = 'Sair do modo imersivo';
+        _syncGlassCards();
+        // sincroniza novamente após dados atualizarem
+        setTimeout(_syncGlassCards, 500);
+      } else {
+        document.body.classList.remove('immersive-mode');
+        if (icon) { icon.setAttribute('data-lucide', 'maximize-2'); lucide.createIcons(); }
+        btn.title = 'Modo imersivo: mapa expandido com cards flutuantes';
+      }
+      // força Leaflet a recalcular o tamanho do mapa
+      if (window._map) setTimeout(() => window._map.invalidateSize(), 320);
+    }
+
+    // ============================================================================
+    // SENTINELAS METEOROLÓGICAS
+    // ============================================================================
+    const SENTINEL_STATIONS = [
+      { id: "gericino", name: "Complexo de Gericinó (Bangu)", role: "Epicentro Operacional SEPPEN", lat: -22.8375, lon: -43.4780, distKm: 0, corridor: "Local" },
+      { id: "sp_resende", name: "Divisa SP / Vale do Paraíba (Resende)", role: "Alerta Antecipado 2h–4h (Frentes de SP)", lat: -22.4689, lon: -44.4467, distKm: 112, corridor: "Corredor Continental SP" },
+      { id: "serra_piloto", name: "Radar DECEA Serra do Piloto (Mangaratiba)", role: "Entrada Sudoeste / Costa Verde (1h–2h)", lat: -22.8980, lon: -44.0320, distKm: 56, corridor: "Rota Serra do Mar" },
+      { id: "alto_mar", name: "Alto-Mar / Bacia de Santos (Oceano Atlântico)", role: "Frentes Marítimas e Ciclones (1h30–3h)", lat: -23.3500, lon: -43.3500, distKm: 58, corridor: "Corredor Marítimo Sul" },
+      { id: "marambaia", name: "Restinga da Marambaia / Baía de Sepetiba", role: "Vetor de Rajadas Costeiras (40 min)", lat: -23.0500, lon: -43.6000, distKm: 26, corridor: "Orla Zona Oeste" },
+      { id: "eta_guandu", name: "ETA Guandu / Nova Iguaçu (Águas do Rio)", role: "Segurança Hídrica / Adutora Principal", lat: -22.8150, lon: -43.6250, distKm: 15, corridor: "Manancial Hídrico" }
+    ];
+
+    let appState = {
+      scenario: 'real',
+      stationsData: {},
+      gericinoHourly: [],
+      stage: 1,
+      etaText: 'SEM FRENTE ATIVA',
+      etaDetail: 'Corredor SP e Alto-Mar estáveis',
+      lightRisk: 'NORMAL',
+      waterRisk: 'NORMAL',
+      claroRisk: '100% ATIVO',
+      activeModalTarget: 'light',
+      layers: { perimeter: true, units: true, jamming: true, radar: true, fronts: true },
+      radarFrames: [],
+      currentFrameIndex: 5,
+      radarPlaying: true,
+      radarOpacity: 0.65
+    };
+
+    let map, layerGroupPerimeter, layerGroupUnits, layerGroupJamming, layerGroupSentinels, layerGroupColdFronts, layerGroupDopplerCells;
+    let radarTileLayer = null;
+    let redemetImageOverlay = null;
+    let perimeterPoly = null;
+    let radarAnimTimer = null;
+
+    function initMap() {
+      map = L.map('map', {
+        center: [-22.84148954670614, -43.48204419589487],
+        zoom: 15,
+        zoomControl: true
+      });
+      window._map = map;
+
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20,
+        attribution: 'Esri Satellite • SEPPEN-RJ KML'
+      }).addTo(map);
+
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 20,
+        opacity: 0.85
+      }).addTo(map);
+
+      layerGroupDopplerCells = L.layerGroup().addTo(map);
+      layerGroupColdFronts = L.layerGroup().addTo(map);
+      layerGroupPerimeter = L.layerGroup().addTo(map);
+      layerGroupUnits = L.layerGroup().addTo(map);
+      layerGroupJamming = L.layerGroup().addTo(map);
+      layerGroupSentinels = L.layerGroup().addTo(map);
+
+      redrawKmlLayers();
+      initRadarAndRedemet();
+      focusView('complexo');
+      startRadarLoop();
+    }
+
+    function redrawKmlLayers() {
+      layerGroupPerimeter.clearLayers();
+      layerGroupUnits.clearLayers();
+      layerGroupJamming.clearLayers();
+
+      // 1. Perímetro Oficial do Complexo Prisional de Gericinó (ID 0C317EEDAF403AD017C9 - 22 vértices exatos)
+      L.polygon(KML_ORIGINAL.perimeter.coords, {
+        color: '#86efac',
+        weight: 6,
+        opacity: 0.45,
+        fill: false
+      }).addTo(layerGroupPerimeter);
+
+      perimeterPoly = L.polygon(KML_ORIGINAL.perimeter.coords, {
+        color: KML_ORIGINAL.perimeter.strokeColor,
+        weight: 3.5,
+        opacity: 1.0,
+        fillColor: KML_ORIGINAL.perimeter.fillColor,
+        fillOpacity: 0.14
+      }).addTo(layerGroupPerimeter);
+
+      perimeterPoly.bindPopup(`
+        <div class="text-xs space-y-1">
+          <div class="font-bold text-emerald-400 uppercase">KML Oficial • Perímetro Geral</div>
+          <div class="font-semibold text-white">${KML_ORIGINAL.perimeter.name}</div>
+          <div class="mono text-[10px] text-slate-300">Placemark ID: ${KML_ORIGINAL.perimeter.id}</div>
+          <div class="mono text-[10px] text-emerald-400">Vértices KML: ${KML_ORIGINAL.perimeter.coords.length} coordenadas exatas</div>
+        </div>
+      `);
+
+      // 2. Unidades Prisionais (Bangu 4 JL e Bangu 3 GC com direções de rótulo opostas para não sobrepor!)
+      KML_ORIGINAL.units.forEach(u => {
+        const poly = L.polygon(u.coords, {
+          color: u.strokeColor,
+          weight: 3.5,
+          opacity: 1.0,
+          fillColor: u.fillColor,
+          fillOpacity: 0.28
+        }).addTo(layerGroupUnits);
+
+        poly.bindPopup(`
+          <div class="text-xs space-y-1">
+            <div class="font-bold text-sky-400 uppercase">Unidade Penal KML (${u.name})</div>
+            <div class="font-bold text-white">${u.fullName}</div>
+            <div class="mono text-[10px] text-slate-300">Polygon ID: ${u.polyId}</div>
+            <div class="mono text-[10px] text-slate-300">Point ID: ${u.pinId}</div>
+            <div class="mono text-[10px] text-sky-300">Coord: ${u.pin[0].toFixed(6)}, ${u.pin[1].toFixed(6)} (${u.alt}m)</div>
+          </div>
+        `);
+
+        const unitIcon = L.divIcon({
+          className: '',
+          html: `<div style="background:#1976d2;border:2px solid #ffffff;color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:10px;box-shadow:0 0 10px rgba(25,118,210,0.95);">📍</div>`,
+          iconSize: [22, 22],
+          iconAnchor: [11, 11]
+        });
+
+        L.marker(u.pin, { icon: unitIcon })
+          .bindTooltip(`${u.name}`, { permanent: true, direction: u.tooltipDir, offset: u.tooltipOffset, className: 'kml-label-unit' })
+          .bindPopup(`<b>${u.fullName}</b><br><span class="mono text-[10px]">ID KML: ${u.pinId}</span>`)
+          .addTo(layerGroupUnits);
+      });
+
+      // 3. As 3 Áreas de Bloqueio de Celular (Claro / CICC com direções de rótulo escalonadas)
+      KML_ORIGINAL.blockingAreas.forEach((b, idx) => {
+        const poly = L.polygon(b.coords, {
+          color: b.strokeColor,
+          weight: 3,
+          opacity: 1.0,
+          fillColor: b.fillColor,
+          fillOpacity: 0.35
+        }).addTo(layerGroupJamming);
+
+        poly.bindPopup(`
+          <div class="text-xs space-y-1">
+            <div class="font-bold text-fuchsia-400 uppercase">Zona de Bloqueio RF #${idx + 1} (${b.polyName})</div>
+            <div class="font-bold text-white">${b.pinName} — ${b.unitRef}</div>
+            <div class="mono text-[10px] text-slate-300">Polygon ID: ${b.polyId}</div>
+            <div class="mono text-[10px] text-slate-300">Point ID: ${b.pinId}</div>
+            <div class="mono text-[10px] text-fuchsia-300">Pino KML: ${b.pin[0].toFixed(6)}, ${b.pin[1].toFixed(6)} (${b.alt}m)</div>
+          </div>
+        `);
+
+        const jamIcon = L.divIcon({
+          className: '',
+          html: `<div style="background:#1976d2;border:2px solid #f5d0fe;color:#fff;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;box-shadow:0 0 10px rgba(171,71,188,0.95);">📡</div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+
+        L.marker(b.pin, { icon: jamIcon })
+          .bindTooltip(`${b.pinName}`, { permanent: true, direction: b.tooltipDir, offset: b.tooltipOffset, className: 'kml-label-block' })
+          .addTo(layerGroupJamming);
+      });
+    }
+
+    async function initRadarAndRedemet() {
+      try {
+        const redemetUrl = `https://api-redemet.decea.mil.br/produtos/radar/maxcappi?api_key=${REDEMET_API_KEY}`;
+        const redRes = await fetch(redemetUrl);
+        if (redRes.ok) {
+          const redData = await redRes.json();
+          const radList = redData?.data?.radar?.[0] || redData?.data?.radar || [];
+          const items = Array.isArray(radList) ? radList : [radList];
+          const rjRadar = items.find(r => r && (r.nome?.toLowerCase().includes('couto') || r.nome?.toLowerCase().includes('rio') || r.path));
+          if (rjRadar && rjRadar.path) {
+            const bounds = [
+              [rjRadar.lat_min || -25.10, rjRadar.lon_min || -46.10],
+              [rjRadar.lat_max || -20.50, rjRadar.lon_max || -40.80]
+            ];
+            if (redemetImageOverlay) map.removeLayer(redemetImageOverlay);
+            redemetImageOverlay = L.imageOverlay(rjRadar.path, bounds, {
+              opacity: appState.radarOpacity,
+              zIndex: 310
+            });
+            if (appState.layers.radar) redemetImageOverlay.addTo(map);
+          }
+        }
+      } catch (e) {
+        console.info('REDEMET API em modo híbrido com RainViewer + Doppler:', e);
+      }
+
+      try {
+        const res = await fetch('https://api.rainviewer.com/public/weather-maps.json');
+        const data = await res.json();
+        if (data && data.radar) {
+          const past = data.radar.past || [];
+          const nowcast = data.radar.nowcast || [];
+          const combined = [...past.slice(-6), ...nowcast.slice(0, 5)];
+          if (combined.length > 0) {
+            appState.radarFrames = combined.map(f => ({
+              time: f.time,
+              url: `${data.host}${f.path}/512/{z}/{x}/{y}/2/1_1.png`,
+              isForecast: nowcast.some(n => n.time === f.time)
+            }));
+            const slider = document.getElementById('radarTimelineSlider');
+            if (slider) {
+              slider.max = appState.radarFrames.length - 1;
+              slider.value = Math.max(0, past.slice(-6).length - 1);
+              appState.currentFrameIndex = Number(slider.value);
+            }
+            applyRadarFrame(appState.currentFrameIndex);
+          }
+        }
+      } catch (err) {
+        document.getElementById('radarTimestamp').textContent = `• Radar DECEA + Vetores Ativos`;
+      }
+    }
+
+    function applyRadarFrame(index) {
+      const total = appState.radarFrames.length || 11;
+      const idx = Math.max(0, Math.min(index, total - 1));
+      appState.currentFrameIndex = idx;
+
+      const slider = document.getElementById('radarTimelineSlider');
+      if (slider) slider.value = idx;
+
+      const timeStepOffset = (idx - 5) * 0.22;
+
+      if (appState.radarFrames.length > 0) {
+        const frame = appState.radarFrames[idx];
+        if (radarTileLayer) map.removeLayer(radarTileLayer);
+        radarTileLayer = L.tileLayer(frame.url, {
+          tileSize: 512,
+          zoomOffset: -1,
+          maxNativeZoom: 6,
+          maxZoom: 20,
+          opacity: appState.radarOpacity,
+          zIndex: 300
+        });
+        if (appState.layers.radar) radarTileLayer.addTo(map);
+
+        const dt = new Date(frame.time * 1000).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const tag = frame.isForecast ? 'PREVISÃO' : 'DOPPLER';
+        document.getElementById('radarFrameLabel').textContent = `${tag} (${dt})`;
+        document.getElementById('radarTimestamp').textContent = `• Quadro ${idx + 1}/${appState.radarFrames.length}`;
+      } else {
+        const mins = (idx - 5) * 20;
+        const label = mins === 0 ? 'AGORA (T+0 min)' : (mins > 0 ? `PREVISÃO +${mins} min` : `HISTÓRICO ${mins} min`);
+        document.getElementById('radarFrameLabel').textContent = label;
+      }
+
+      renderColdFrontsAndDopplerCells(timeStepOffset);
+    }
+
+    function renderColdFrontsAndDopplerCells(stepOffset = 0) {
+      if (!layerGroupColdFronts || !layerGroupDopplerCells) return;
+      layerGroupColdFronts.clearLayers();
+      layerGroupDopplerCells.clearLayers();
+
+      const g = appState.stationsData['gericino'] || { rain: 0, gust: 22, dir: 215, wind: 16 };
+      const sp = appState.stationsData['sp_resende'] || { rain: 0, gust: 24 };
+      const sea = appState.stationsData['alto_mar'] || { rain: 0, gust: 26 };
+      const pil = appState.stationsData['serra_piloto'] || { rain: 0, gust: 22 };
+
+      if (appState.layers.fronts) {
+        // Setor direcional de aproximação (substitui os 4 círculos concêntricos).
+        // Mostra o corredor SO→NE de onde a frente se aproxima.
+        (function drawApproachSector() {
+          function geoArcPt(lat, lon, bear, distM) {
+            const R = 6371000, d = distM / R, b = bear * Math.PI / 180;
+            const φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
+            const φ2 = Math.asin(Math.sin(φ)*Math.cos(d) + Math.cos(φ)*Math.sin(d)*Math.cos(b));
+            const λ2 = λ + Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(φ), Math.cos(d) - Math.sin(φ)*Math.sin(φ2));
+            return [φ2 * 180 / Math.PI, λ2 * 180 / Math.PI];
+          }
+          const C = [-22.8414, -43.4820];
+          const FROM = 225, HALF = 52; // frente vem do SW; setor de 104°
+          const rings = [
+            { r: 3000,  fOp: 0.28, sOp: 0.90, w: 1.5, cls: '' },
+            { r: 12000, fOp: 0.14, sOp: 0.60, w: 1.0, cls: '' },
+            { r: 28000, fOp: 0.08, sOp: 0.45, w: 0.8, cls: '' },
+            { r: 55000, fOp: 0.04, sOp: 0.28, w: 0.5, cls: 'animated-sector-pulse' }
+          ];
+          rings.forEach(({ r, fOp, sOp, w, cls }) => {
+            const arc = [];
+            for (let a = FROM - HALF; a <= FROM + HALF; a += 3) {
+              arc.push(geoArcPt(C[0], C[1], a, r));
+            }
+            L.polygon([C, ...arc, C], {
+              color: '#38bdf8', weight: w, opacity: sOp,
+              fillColor: '#0ea5e9', fillOpacity: fOp,
+              className: cls, interactive: false
+            }).addTo(layerGroupColdFronts);
+          });
+        })();
+      }
+
+      const isSpActive = appState.scenario === 'sp_front' || appState.scenario === 'severe' || (sp.rain > 0.2 || pil.rain > 0.2);
+      const isSeaActive = appState.scenario === 'sea_storm' || appState.scenario === 'severe' || (sea.rain > 0.2);
+      const progress = Math.max(-0.8, Math.min(1.0, stepOffset));
+
+      const spBaseLat = isSpActive ? -22.74 : -22.62;
+      const spBaseLon = isSpActive ? -43.82 : -44.12;
+      const frontCenterSp = [
+        spBaseLat + (-22.8414 - spBaseLat) * 0.55 * progress,
+        spBaseLon + (-43.4820 - spBaseLon) * 0.55 * progress
+      ];
+
+      const seaBaseLat = isSeaActive ? -22.98 : -23.16;
+      const seaBaseLon = isSeaActive ? -43.58 : -43.68;
+      const frontCenterSea = [
+        seaBaseLat + (-22.8414 - seaBaseLat) * 0.65 * progress,
+        seaBaseLon + (-43.4820 - seaBaseLon) * 0.65 * progress
+      ];
+
+      if (appState.layers.radar) {
+        const dopplerCells = [
+          { center: frontCenterSp, radiusOuter: isSpActive ? 16000 : 9500, intensity: isSpActive ? 'high' : 'light', label: 'Núcleo Doppler Corredor SP' },
+          { center: frontCenterSea, radiusOuter: isSeaActive ? 18000 : 10500, intensity: isSeaActive ? 'high' : 'light', label: 'Núcleo Doppler Atlântico Sul' },
+          {
+            center: [-22.8520 + (0.011 * progress), -43.5020 + (0.020 * progress)],
+            radiusOuter: (appState.stage >= 3) ? 2800 : 1650,
+            intensity: (appState.stage >= 3) ? 'severe' : 'moderate',
+            label: 'Célula Convectiva Bangu / Mendanha'
+          }
+        ];
+
+        dopplerCells.forEach(cell => {
+          const op = appState.radarOpacity;
+          L.circle(cell.center, {
+            radius: cell.radiusOuter,
+            color: '#22c55e',
+            weight: 1,
+            fillColor: '#22c55e',
+            fillOpacity: op * 0.24
+          }).addTo(layerGroupDopplerCells);
+
+          L.circle([cell.center[0] + 0.0015, cell.center[1] + 0.002], {
+            radius: cell.radiusOuter * 0.62,
+            color: '#eab308',
+            weight: 1,
+            fillColor: '#eab308',
+            fillOpacity: op * 0.32
+          }).addTo(layerGroupDopplerCells);
+
+          if (cell.intensity === 'high' || cell.intensity === 'severe') {
+            L.circle([cell.center[0] + 0.002, cell.center[1] + 0.003], {
+              radius: cell.radiusOuter * 0.35,
+              color: '#ef4444',
+              weight: 1.5,
+              fillColor: '#dc2626',
+              fillOpacity: op * 0.45
+            }).bindPopup(`<b>${cell.label}</b><br>Refletividade: 52 dBZ (Severo)`).addTo(layerGroupDopplerCells);
+          }
+        });
+      }
+
+      if (appState.layers.fronts) {
+        const fLat = -22.8540 + (0.013 * progress);
+        const fLon = -43.5050 + (0.023 * progress);
+
+        const coldFrontArcLocal = [
+          [fLat - 0.022, fLon - 0.028],
+          [fLat - 0.010, fLon - 0.012],
+          [fLat, fLon],
+          [fLat + 0.011, fLon + 0.014],
+          [fLat + 0.024, fLon + 0.030]
+        ];
+
+        L.polyline(coldFrontArcLocal, {
+          color: '#0ea5e9',
+          weight: 3.5,
+          opacity: 0.95
+        }).bindPopup(`<b>Frente Fria / Linha de Instabilidade</b><br>Vetor: SO → NE (${Math.round(g.gust || 28)} km/h)`).addTo(layerGroupColdFronts);
+
+        // Triângulos meteorológicos (símbolo padrão INMET de frente fria):
+        // triângulos cheios sobre a linha, apontando para o lado de avanço da massa fria.
+        (function addFrontTriangles(arc) {
+          const CL = Math.cos(-22.84 * Math.PI / 180);
+          for (let i = 0; i < arc.length - 1; i++) {
+            const [y1, x1] = arc[i], [y2, x2] = arc[i + 1];
+            const my = (y1 + y2) / 2, mx = (x1 + x2) / 2;
+            const dy = y2 - y1, dxEq = (x2 - x1) * CL;
+            const len = Math.sqrt(dy * dy + dxEq * dxEq) || 1;
+            // Tangente normalizada (direção da linha)
+            const tLat = dy / len, tLon = dxEq / (len * CL);
+            // Perpendicular esquerda (aponta para SE = lado de avanço)
+            const pLat = -dxEq / len, pLon = dy / (len * CL);
+            const h = 0.016, b = 0.008; // tamanho em graus ≈ 1.8km altura, 0.9km base
+            L.polygon([
+              [my + pLat * h, mx + pLon * h],   // ponta
+              [my - tLat * b, mx - tLon * b],   // base esq
+              [my + tLat * b, mx + tLon * b]    // base dir
+            ], {
+              color: '#0ea5e9', weight: 1,
+              fillColor: '#0ea5e9', fillOpacity: 0.93,
+              interactive: false
+            }).addTo(layerGroupColdFronts);
+          }
+        })(coldFrontArcLocal);
+
+        const futureArcLocal = coldFrontArcLocal.map(pt => [pt[0] + 0.006, pt[1] + 0.011]);
+        L.polyline(futureArcLocal, {
+          color: '#38bdf8',
+          weight: 2,
+          dashArray: '6, 6',
+          opacity: 0.75
+        }).addTo(layerGroupColdFronts);
+
+        const frontBadgeIcon = L.divIcon({
+          className: '',
+          html: `<div class="front-label-tag">▲▲ FRENTE FRIA (${Math.round(g.gust || 28)} km/h) →</div>`,
+          iconSize: [175, 22],
+          iconAnchor: [87, 11]
+        });
+        L.marker([fLat, fLon], { icon: frontBadgeIcon }).addTo(layerGroupColdFronts);
+
+        L.polyline([[-22.4689, -44.4467], [-22.8980, -44.0320], [-22.8414, -43.4820]], {
+          color: isSpActive ? '#f43f5e' : '#38bdf8',
+          weight: 3,
+          dashArray: '8, 6',
+          className: 'animated-front-vector',
+          opacity: 0.85
+        }).addTo(layerGroupColdFronts);
+
+        L.polyline([[-23.3500, -43.3500], [-23.0500, -43.6000], [-22.8414, -43.4820]], {
+          color: isSeaActive ? '#f59e0b' : '#06b6d4',
+          weight: 3,
+          dashArray: '8, 6',
+          className: 'animated-front-vector',
+          opacity: 0.85
+        }).addTo(layerGroupColdFronts);
+      }
+    }
+
+    function startRadarLoop() {
+      if (radarAnimTimer) clearInterval(radarAnimTimer);
+      radarAnimTimer = setInterval(() => {
+        if (!appState.radarPlaying) return;
+        const maxFrame = (appState.radarFrames.length > 0 ? appState.radarFrames.length - 1 : 10);
+        let next = appState.currentFrameIndex + 1;
+        if (next > maxFrame) next = 0;
+        applyRadarFrame(next);
+      }, 1400);
+    }
+
+    function toggleRadarAnimation() {
+      appState.radarPlaying = !appState.radarPlaying;
+      document.getElementById('playRadarIcon').textContent = appState.radarPlaying ? '⏸' : '▶';
+      document.getElementById('playRadarText').textContent = appState.radarPlaying ? 'Animando Frentes' : 'Pausado';
+      document.getElementById('btnPlayRadar').setAttribute('aria-pressed', String(appState.radarPlaying));
+    }
+
+    function seekRadarFrame(val) {
+      appState.radarPlaying = false;
+      document.getElementById('playRadarIcon').textContent = '▶';
+      document.getElementById('playRadarText').textContent = 'Pausado';
+      document.getElementById('btnPlayRadar').setAttribute('aria-pressed', 'false');
+      applyRadarFrame(Number(val));
+      const sl = document.getElementById('radarTimelineSlider');
+      if (sl) sl.setAttribute('aria-valuetext', `Frame ${Number(val) + 1} de ${Number(sl.max) + 1}`);
+    }
+
+    function setRadarOpacity(val) {
+      appState.radarOpacity = Number(val) / 100;
+      if (radarTileLayer) radarTileLayer.setOpacity(appState.radarOpacity);
+      if (redemetImageOverlay) redemetImageOverlay.setOpacity(appState.radarOpacity);
+      applyRadarFrame(appState.currentFrameIndex);
+      const sl = document.getElementById('radarOpacitySlider');
+      if (sl) sl.setAttribute('aria-valuetext', `${val}%`);
+    }
+
+    function focusView(target) {
+      if (target === 'complexo') {
+        if (perimeterPoly) {
+          map.fitBounds(perimeterPoly.getBounds(), { padding: [22, 22] });
+        } else {
+          map.setView([-22.84148954670614, -43.48204419589487], 15);
+        }
+      } else if (target === 'unidades') {
+        map.setView([-22.8378, -43.4779], 17);
+      } else if (target === 'bangu4') {
+        map.setView([-22.8369, -43.4772], 18);
+      } else if (target === 'bangu3') {
+        map.setView([-22.8389, -43.4786], 18);
+      } else if (target === 'bloqueios') {
+        map.setView([-22.8378, -43.4778], 17);
+      } else if (target === 'macro') {
+        map.setView([-22.88, -43.82], 9);
+      }
+    }
+
+    function toggleLayer(name) {
+      appState.layers[name] = !appState.layers[name];
+      const active = appState.layers[name];
+      if (name === 'perimeter') {
+        active ? map.addLayer(layerGroupPerimeter) : map.removeLayer(layerGroupPerimeter);
+        document.getElementById('btnLayerPerim').className = active
+          ? 'px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[10px] font-semibold'
+          : 'btn-layer-off';
+      } else if (name === 'units') {
+        active ? map.addLayer(layerGroupUnits) : map.removeLayer(layerGroupUnits);
+        document.getElementById('btnLayerUnits').className = active
+          ? 'px-2 py-1 rounded bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-[10px] font-semibold'
+          : 'btn-layer-off';
+      } else if (name === 'jamming') {
+        active ? map.addLayer(layerGroupJamming) : map.removeLayer(layerGroupJamming);
+        document.getElementById('btnLayerJam').className = active
+          ? 'px-2 py-1 rounded bg-fuchsia-500/20 border border-fuchsia-500/50 text-fuchsia-300 text-[10px] font-semibold'
+          : 'btn-layer-off';
+      } else if (name === 'fronts') {
+        active ? map.addLayer(layerGroupColdFronts) : map.removeLayer(layerGroupColdFronts);
+        document.getElementById('btnLayerFronts').className = active
+          ? 'px-2 py-1 rounded bg-sky-500/25 border border-sky-400/60 text-sky-200 text-[10px] font-bold'
+          : 'btn-layer-off';
+      } else if (name === 'radar') {
+        if (radarTileLayer) {
+          active ? map.addLayer(radarTileLayer) : map.removeLayer(radarTileLayer);
+        }
+        if (redemetImageOverlay) {
+          active ? map.addLayer(redemetImageOverlay) : map.removeLayer(redemetImageOverlay);
+        }
+        active ? map.addLayer(layerGroupDopplerCells) : map.removeLayer(layerGroupDopplerCells);
+        document.getElementById('radarSweepOverlay').style.display = active ? 'flex' : 'none';
+        document.getElementById('btnLayerRadar').className = active
+          ? 'px-2 py-1 rounded bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 text-[10px] font-semibold'
+          : 'btn-layer-off';
+      }
+    }
+
+    async function fetchAllData(manual = false) {
+      const icon = document.getElementById('syncIcon');
+      if (icon) icon.classList.add('animate-spin');
+      document.getElementById('telemetryGrid')?.setAttribute('aria-busy', 'true');
+
+      try {
+        const lats = SENTINEL_STATIONS.map(s => s.lat).join(',');
+        const lons = SENTINEL_STATIONS.map(s => s.lon).join(',');
+        const url = `https://api.open-meteo.com/v1/forecast?latitude=${lats}&longitude=${lons}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,surface_pressure,wind_speed_10m,wind_direction_10m,wind_gusts_10m&hourly=temperature_2m,precipitation_probability,precipitation,wind_gusts_10m,cape&timezone=America%2FSao_Paulo&forecast_days=1`;
+
+        const res = await fetch(url);
+        const data = await res.json();
+        const results = Array.isArray(data) ? data : [data];
+
+        SENTINEL_STATIONS.forEach((st, idx) => {
+          const item = results[idx] || results[0];
+          const cur = item.current || {};
+          const hr = item.hourly || {};
+          const nowHour = new Date().getHours();
+
+          appState.stationsData[st.id] = {
+            temp: cur.temperature_2m ?? 26.4,
+            feels: cur.apparent_temperature ?? 28.1,
+            humidity: cur.relative_humidity_2m ?? 72,
+            rain: cur.precipitation ?? 0.0,
+            press: cur.surface_pressure ?? 1013,
+            wind: cur.wind_speed_10m ?? 14,
+            gust: cur.wind_gusts_10m ?? 24,
+            dir: cur.wind_direction_10m ?? 210,
+            prob: (hr.precipitation_probability && hr.precipitation_probability[nowHour]) ?? 20,
+            cape: (hr.cape && hr.cape[nowHour]) ?? 320
+          };
+
+          if (st.id === 'gericino' && hr.time) {
+            appState.gericinoHourly = [];
+            for (let i = 0; i < 6; i++) {
+              const hIdx = Math.min(nowHour + i, hr.time.length - 1);
+              appState.gericinoHourly.push({
+                hour: hr.time[hIdx] ? hr.time[hIdx].slice(11, 16) : `${(nowHour + i) % 24}:00`,
+                temp: hr.temperature_2m ? Math.round(hr.temperature_2m[hIdx]) : 26,
+                prob: hr.precipitation_probability ? hr.precipitation_probability[hIdx] : 15,
+                rain: hr.precipitation ? hr.precipitation[hIdx] : 0,
+                gust: hr.wind_gusts_10m ? Math.round(hr.wind_gusts_10m[hIdx]) : 20
+              });
+            }
+          }
+        });
+
+        document.getElementById('apiStatusBadge').textContent = '● OPEN-METEO + DECEA';
+        document.getElementById('apiStatusBadge').className = 'text-[11px] mono text-emerald-400';
+        const grid = document.getElementById('telemetryGrid');
+        if (grid) { grid.removeAttribute('data-loading'); grid.setAttribute('aria-busy', 'false'); }
+      } catch (e) {
+        SENTINEL_STATIONS.forEach(st => {
+          appState.stationsData[st.id] = {
+            temp: 27.2, feels: 29.5, humidity: 70, rain: 0.0, press: 1012, wind: 15, gust: 25, dir: 215, prob: 20, cape: 350
+          };
+        });
+        document.getElementById('apiStatusBadge').textContent = '● CONTINGÊNCIA LOCAL';
+        document.getElementById('apiStatusBadge').className = 'text-[11px] mono text-amber-400';
+        document.getElementById('executiveSummaryText')?.removeAttribute('data-loading');
+        document.getElementById('telemetryGrid')?.setAttribute('aria-busy', 'false');
+      }
+
+      applyScenarioModifiers();
+      updateDashboardUI();
+      applyRadarFrame(appState.currentFrameIndex);
+      if (manual) addAuditLog('Sincronização meteorológica realizada (Open-Meteo + DECEA REDEMET).');
+      if (icon) setTimeout(() => icon.classList.remove('animate-spin'), 400);
+      if (_immersiveActive) _syncGlassCards();
+    }
+
+    function setScenario(mode) {
+      appState.scenario = mode;
+      ['real', 'sp', 'sea', 'severe'].forEach(k => {
+        const btn = document.getElementById(`scen-${k}`);
+        if (btn) {
+          btn.className = 'px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition';
+          btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+      const mapBtn = { real: 'scen-real', sp_front: 'scen-sp', sea_storm: 'scen-sea', severe: 'scen-severe' }[mode];
+      const activeBtn = document.getElementById(mapBtn);
+      if (activeBtn) {
+        activeBtn.className = 'px-2 py-1.5 rounded text-[10px] font-semibold bg-blue-600 text-white transition';
+        activeBtn.setAttribute('aria-pressed', 'true');
+      }
+
+      fetchAllData(false);
+      addAuditLog(`Modo de visualização alterado para: ${mode.toUpperCase()}`);
+    }
+
+    function applyScenarioModifiers() {
+      const m = appState.scenario;
+      if (m === 'sp_front') {
+        appState.stationsData['sp_resende'] = { temp: 19.8, feels: 19.0, humidity: 94, rain: 28.5, press: 1003, wind: 48, gust: 72, dir: 255, prob: 95, cape: 1850 };
+        appState.stationsData['serra_piloto'] = { temp: 21.4, feels: 21.0, humidity: 89, rain: 14.2, press: 1006, wind: 38, gust: 56, dir: 245, prob: 88, cape: 1320 };
+        appState.stationsData['gericino'].press = 1008;
+        appState.stationsData['gericino'].prob = 80;
+      } else if (m === 'sea_storm') {
+        appState.stationsData['alto_mar'] = { temp: 20.5, feels: 19.2, humidity: 95, rain: 31.0, press: 1001, wind: 55, gust: 82, dir: 190, prob: 96, cape: 2100 };
+        appState.stationsData['marambaia'] = { temp: 22.1, feels: 21.5, humidity: 91, rain: 16.4, press: 1005, wind: 44, gust: 66, dir: 195, prob: 90, cape: 1450 };
+      } else if (m === 'severe') {
+        appState.stationsData['gericino'] = { temp: 21.0, feels: 20.4, humidity: 97, rain: 42.0, press: 999, wind: 58, gust: 86, dir: 210, prob: 100, cape: 2650 };
+        appState.stationsData['eta_guandu'] = { temp: 21.2, feels: 21.0, humidity: 96, rain: 38.0, press: 1000, wind: 52, gust: 78, dir: 210, prob: 98, cape: 2300 };
+        appState.stationsData['sp_resende'].rain = 24.0;
+        appState.stationsData['alto_mar'].rain = 29.0;
+      }
+    }
+
+    function degToCompass(num) {
+      const val = Math.floor((num / 22.5) + 0.5);
+      const arr = ["N", "NNE", "NE", "ENE", "L", "ESE", "SE", "SSE", "S", "SSO", "SO", "OSO", "O", "ONO", "NO", "NNO"];
+      return arr[(val % 16)];
+    }
+
+    function updateDashboardUI() {
+      const g = appState.stationsData['gericino'] || {};
+      const sp = appState.stationsData['sp_resende'] || {};
+      const sea = appState.stationsData['alto_mar'] || {};
+      const pil = appState.stationsData['serra_piloto'] || {};
+      const gua = appState.stationsData['eta_guandu'] || {};
+
+      document.getElementById('valTemp').textContent = `${g.temp.toFixed(1)}°C`;
+      document.getElementById('valFeels').textContent = `Sens: ${g.feels.toFixed(1)}°C`;
+      document.getElementById('valRain').textContent = `${g.rain.toFixed(1)} mm`;
+      document.getElementById('valProb').textContent = `Prob: ${g.prob}%`;
+      document.getElementById('valWind').textContent = `${Math.round(g.gust)} km/h`;
+      document.getElementById('valDir').textContent = `Vento: ${degToCompass(g.dir)} (${Math.round(g.wind)} km/h)`;
+      document.getElementById('valHum').textContent = `${Math.round(g.humidity)}%`;
+      document.getElementById('valPress').textContent = `${Math.round(g.press)} hPa`;
+      document.getElementById('valPressTrend').textContent = g.press < 1006 ? 'Queda Barométrica' : 'Estável';
+      document.getElementById('valCape').textContent = `${Math.round(g.cape)} J/kg`;
+      document.getElementById('valStormRisk').textContent = g.cape > 1200 ? 'Alto Risco Raios' : 'Baixo Risco';
+
+      let stage = 1;
+      let etaTitle = 'SEM FRENTE ATIVA';
+      let etaSub = 'Corredor SP e Alto-Mar limpos';
+      let summary = `Condições meteorológicas normais no Complexo de Gericinó (${g.temp.toFixed(1)}°C, vento ${Math.round(g.gust)} km/h). Sem frentes severas no corredor de São Paulo ou no Oceano Atlântico.`;
+      let etaProgress = 12;
+
+      if (g.rain >= 25 || g.gust >= 70) {
+        stage = 4;
+        etaTitle = 'IMPACTO EM CURSO';
+        etaSub = 'Tempestade severa sobre Bangu';
+        etaProgress = 100;
+        summary = `ALERTA CRÍTICO (ESTÁGIO 4): Tempestade severa sobre o Complexo de Gericinó (${g.rain.toFixed(1)} mm/h e rajadas de ${Math.round(g.gust)} km/h). Acione imediatamente Light, Águas do Rio, Claro (3 zonas de bloqueio), Engenharia e GSI/SOE.`;
+      } else if (sp.rain >= 15 || sp.gust >= 55) {
+        stage = 3;
+        const speed = Math.max(sp.wind, 35);
+        const etaH = (112 / speed).toFixed(1);
+        etaTitle = `CHEGADA EM ~${etaH}h (SP)`;
+        etaSub = `Frente no Vale do Paraíba (${sp.rain.toFixed(1)} mm)`;
+        etaProgress = 75;
+        summary = `ALERTA ANTECIPADO (SP → RJ): Tempestade detectada na divisa com São Paulo / Resende (${sp.rain.toFixed(1)} mm/h, rajadas de ${Math.round(sp.gust)} km/h). Deslocamento para Gericinó estimado em ${etaH} horas.`;
+      } else if (sea.rain >= 15 || sea.gust >= 60) {
+        stage = 3;
+        const speed = Math.max(sea.wind, 32);
+        const etaH = (58 / speed).toFixed(1);
+        etaTitle = `CHEGADA EM ~${etaH}h (MAR)`;
+        etaSub = `Frente Marítima Atlântico (${Math.round(sea.gust)} km/h)`;
+        etaProgress = 78;
+        summary = `ALERTA MARÍTIMO (ALTO-MAR → BANGU): Célula de tempestade no Oceano Atlântico com rajadas de ${Math.round(sea.gust)} km/h avançando via Marambaia. Impacto em Gericinó estimado em ${etaH} horas.`;
+      } else if (pil.rain >= 8 || g.rain >= 5 || g.gust >= 45) {
+        stage = 2;
+        etaTitle = 'ATENÇÃO (~1h15)';
+        etaSub = 'Instabilidade na Serra do Piloto';
+        etaProgress = 48;
+        summary = `ESTÁGIO 2 (ATENÇÃO): Instabilidade moderada nos radares da Serra do Piloto / Zona Oeste. Recomenda-se teste preventivo de geradores e checagem das 3 cercas de bloqueio celular.`;
+      }
+
+      appState.stage = stage;
+      appState.etaText = etaTitle;
+      appState.etaDetail = etaSub;
+
+      const sumEl = document.getElementById('executiveSummaryText');
+      sumEl.removeAttribute('data-loading');
+      sumEl.textContent = summary;
+      document.getElementById('mapWindVector').textContent = `Vento ${degToCompass(g.dir)} (${Math.round(g.gust)} km/h)`;
+      document.getElementById('mapFrontEta').textContent = etaTitle;
+
+      const stageStyles = {
+        1: { label: 'ESTÁGIO 1 • NORMAL', badge: 'RISCO BAIXO', color: 'emerald', width: '25%' },
+        2: { label: 'ESTÁGIO 2 • ATENÇÃO', badge: 'RISCO MODERADO', color: 'amber', width: '50%' },
+        3: { label: 'ESTÁGIO 3 • ALERTA', badge: 'RISCO ALTO', color: 'orange', width: '75%' },
+        4: { label: 'ESTÁGIO 4 • CRÍTICO', badge: 'RISCO EXTREMO', color: 'rose', width: '100%' }
+      }[stage];
+
+      document.getElementById('kpiStageTitle').textContent = stageStyles.label;
+      document.getElementById('kpiStageSub').textContent = etaSub;
+      document.getElementById('kpiStageBar').style.width = stageStyles.width;
+      document.getElementById('kpiEtaTitle').textContent = etaTitle;
+      document.getElementById('kpiEtaSub').textContent = etaSub;
+      document.getElementById('kpiEtaBar').style.width = `${etaProgress}%`;
+      document.getElementById('currentRiskBadge').textContent = stageStyles.badge;
+
+      const maxGust = Math.max(g.gust || 0, sp.gust || 0, sea.gust || 0);
+      if (maxGust >= 65) {
+        appState.lightRisk = 'RISCO ALTO DE QUEDA';
+        document.getElementById('kpiLightTitle').textContent = 'RISCO DE QUEDA';
+        document.getElementById('kpiLightTitle').className = 'text-xs font-extrabold text-rose-400';
+        document.getElementById('kpiLightBar').style.width = '35%';
+        document.getElementById('kpiLightBar').className = 'h-full bg-rose-500 transition-all duration-300';
+        document.getElementById('badgeLight').textContent = 'ALERTA CRÍTICO';
+        document.getElementById('badgeLight').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40';
+        document.getElementById('descLight').textContent = `Rajadas previstas de ${Math.round(maxGust)} km/h ameaçam a rede 13.8kV de Bangu. Pré-aquecer geradores.`;
+        document.getElementById('meterLightLabel').textContent = 'Alerta • Acionar QTA Diesel (48h)';
+        document.getElementById('meterLightBar').style.width = '38%';
+        document.getElementById('meterLightBar').className = 'h-full bg-rose-500 transition-all duration-300';
+      } else {
+        appState.lightRisk = 'REDE ESTÁVEL';
+        document.getElementById('kpiLightTitle').textContent = 'REDE ESTÁVEL';
+        document.getElementById('kpiLightTitle').className = 'text-xs font-extrabold text-emerald-400';
+        document.getElementById('kpiLightBar').style.width = '94%';
+        document.getElementById('kpiLightBar').className = 'h-full bg-emerald-400 transition-all duration-300';
+        document.getElementById('badgeLight').textContent = 'NORMAL';
+        document.getElementById('badgeLight').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        document.getElementById('descLight').textContent = `Alimentadores Light S.A. operando dentro da faixa segura (rajadas de ${Math.round(g.gust)} km/h).`;
+        document.getElementById('meterLightLabel').textContent = '94% • Reserva Diesel 48h';
+        document.getElementById('meterLightBar').style.width = '94%';
+        document.getElementById('meterLightBar').className = 'h-full bg-emerald-400 transition-all duration-300';
+      }
+
+      const maxRain = Math.max(g.rain || 0, gua.rain || 0, sp.rain || 0);
+      if (maxRain >= 20 || maxGust >= 65) {
+        appState.waterRisk = 'RISCO DESABASTECIMENTO';
+        document.getElementById('kpiWaterTitle').textContent = 'ALERTA ADUTORA';
+        document.getElementById('kpiWaterTitle').className = 'text-xs font-extrabold text-amber-400';
+        document.getElementById('kpiWaterBar').style.width = '48%';
+        document.getElementById('badgeWater').textContent = 'MANOBRA PREVENTIVA';
+        document.getElementById('badgeWater').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40';
+        document.getElementById('descWater').textContent = `Chuva intensa (${maxRain.toFixed(1)} mm/h) eleva turbidez no Guandu e risco de queda nas bombas elétricas.`;
+        document.getElementById('meterWaterLabel').textContent = 'Atenção • Travar Cisternas (72h)';
+        document.getElementById('meterWaterBar').style.width = '55%';
+      } else {
+        appState.waterRisk = 'PRESSÃO NORMAL';
+        document.getElementById('kpiWaterTitle').textContent = 'PRESSÃO NORMAL';
+        document.getElementById('kpiWaterTitle').className = 'text-xs font-extrabold text-emerald-400';
+        document.getElementById('kpiWaterBar').style.width = '96%';
+        document.getElementById('badgeWater').textContent = 'NORMAL';
+        document.getElementById('badgeWater').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        document.getElementById('descWater').textContent = `ETA Guandu e recalque de Bangu operando com vazão nominal.`;
+        document.getElementById('meterWaterLabel').textContent = '96% • Reserva Cisternas 72h';
+        document.getElementById('meterWaterBar').style.width = '96%';
+      }
+
+      if (maxRain >= 18 || maxGust >= 60) {
+        appState.claroRisk = 'ATENUAÇÃO RF / NOBREAK';
+        document.getElementById('kpiClaroTitle').textContent = 'ATENÇÃO RF (3 ZONAS)';
+        document.getElementById('kpiClaroTitle').className = 'text-xs font-extrabold text-fuchsia-400';
+        document.getElementById('kpiClaroBar').style.width = '62%';
+        document.getElementById('badgeClaro').textContent = 'MONITORAR SINAL';
+        document.getElementById('badgeClaro').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-500/40';
+        document.getElementById('descClaro').textContent = `Atenuação por chuva intensa nas 3 Áreas Bloqueadas (Bangu 3 GC e Bangu 4 JL). Solicitar ajuste de potência à Claro/CICC.`;
+        document.getElementById('meterClaroLabel').textContent = 'Alerta • Nobreak RF 6h';
+        document.getElementById('meterClaroBar').style.width = '62%';
+      } else {
+        appState.claroRisk = '3/3 ZONAS 100% ATIVAS';
+        document.getElementById('kpiClaroTitle').textContent = '3/3 ZONAS ATIVAS';
+        document.getElementById('kpiClaroTitle').className = 'text-xs font-extrabold text-emerald-400';
+        document.getElementById('kpiClaroBar').style.width = '100%';
+        document.getElementById('badgeClaro').textContent = '100% ATIVO';
+        document.getElementById('badgeClaro').className = 'text-[11px] mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+        document.getElementById('descClaro').textContent = `As 3 cercas KML de bloqueio celular em Bangu 3 e Bangu 4 estão 100% operacionais.`;
+        document.getElementById('meterClaroLabel').textContent = '100% • 3/3 Zonas Ativas';
+        document.getElementById('meterClaroBar').style.width = '100%';
+      }
+
+      renderSentinelStationsList();
+      renderHourlyForecast();
+      renderKmlInventoryList();
+      renderSentinelMapMarkers();
+    }
+
+    function renderSentinelStationsList() {
+      const container = document.getElementById('upstreamSentinelList');
+      container.innerHTML = SENTINEL_STATIONS.filter(s => s.id !== 'gericino').map(s => {
+        const d = appState.stationsData[s.id] || {};
+        const alert = d.rain >= 10 || d.gust >= 50;
+        const badgeClass = alert
+          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
+          : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30';
+        const statusText = alert ? `ALERTA • ${d.rain.toFixed(1)}mm` : `Estável • ${d.rain.toFixed(1)}mm`;
+
+        return `
+          <div onclick="map.setView([${s.lat}, ${s.lon}], 10)" class="p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-800 cursor-pointer transition flex items-center justify-between gap-2">
+            <div class="min-w-0">
+              <div class="text-xs font-bold text-white truncate">${s.name}</div>
+              <div class="text-[10px] text-slate-400 mono mt-0.5">${s.corridor} • Dist: ${s.distKm} km • Vento ${Math.round(d.gust || 0)} km/h</div>
+            </div>
+            <span class="text-[11px] mono font-bold px-2 py-0.5 rounded border shrink-0 ${badgeClass}">${statusText}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderHourlyForecast() {
+      const container = document.getElementById('hourlyForecastGrid');
+      if (!appState.gericinoHourly.length) return;
+      container.innerHTML = appState.gericinoHourly.map(h => `
+        <div class="p-2 rounded-lg bg-slate-900/90 border border-slate-800">
+          <div class="text-[11px] mono text-slate-400">${h.hour}</div>
+          <div class="text-xs font-bold text-white my-0.5">${h.temp}°C</div>
+          <div class="text-[11px] mono ${h.prob >= 60 ? 'text-cyan-300 font-bold' : 'text-slate-400'}">${h.prob}%</div>
+        </div>
+      `).join('');
+    }
+
+    function renderKmlInventoryList() {
+      const container = document.getElementById('kmlElementsList');
+      const items = [
+        {
+          title: `Perímetro: ${KML_ORIGINAL.perimeter.name}`,
+          sub: `ID KML: ${KML_ORIGINAL.perimeter.id} (${KML_ORIGINAL.perimeter.coords.length} vértices)`,
+          badge: "PERÍMETRO",
+          badgeColor: "text-emerald-300 border-emerald-500/40 bg-emerald-500/10",
+          action: "focusView('complexo')"
+        },
+        ...KML_ORIGINAL.units.map(u => ({
+          title: `${u.name} — ${u.fullName}`,
+          sub: `Polígono: ${u.polyId} • Pin: ${u.pinId}`,
+          badge: "UNIDADE",
+          badgeColor: "text-indigo-300 border-indigo-500/40 bg-indigo-500/10",
+          action: `map.setView([${u.pin[0]}, ${u.pin[1]}], 18)`
+        })),
+        ...KML_ORIGINAL.blockingAreas.map((b, i) => ({
+          title: `Bloqueio RF #${i + 1}: ${b.pinName} (${b.polyName})`,
+          sub: `Polígono: ${b.polyId} • Pin: ${b.pinId}`,
+          badge: appState.stage >= 3 ? "MONITORAR RF" : "BLOQUEIO ATIVO",
+          badgeColor: "text-fuchsia-300 border-fuchsia-500/40 bg-fuchsia-500/15",
+          action: `map.setView([${b.pin[0]}, ${b.pin[1]}], 18)`
+        }))
+      ];
+
+      container.innerHTML = items.map(it => `
+        <div onclick="${it.action}" class="p-2.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-slate-800 cursor-pointer transition flex items-center justify-between gap-2">
+          <div class="min-w-0">
+            <div class="text-xs font-bold text-white truncate">${it.title}</div>
+            <div class="text-[11px] mono text-slate-400 truncate mt-0.5">${it.sub}</div>
+          </div>
+          <span class="text-[8px] mono font-bold px-2 py-0.5 rounded border shrink-0 ${it.badgeColor}">${it.badge}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderSentinelMapMarkers() {
+      if (!layerGroupSentinels) return;
+      layerGroupSentinels.clearLayers();
+
+      SENTINEL_STATIONS.filter(s => s.id !== 'gericino').forEach(s => {
+        const d = appState.stationsData[s.id] || {};
+        const isAlert = d.rain >= 10 || d.gust >= 50;
+        const color = isAlert ? '#ef4444' : '#10b981';
+
+        const icon = L.divIcon({
+          className: '',
+          html: `<div style="background:${color};border:2px solid #fff;color:#fff;padding:2px 6px;border-radius:12px;font-family:monospace;font-size:10px;font-weight:700;white-space:nowrap;box-shadow:0 2px 10px rgba(0,0,0,0.7);">${s.name.split(' ')[0]}: ${d.rain ? d.rain.toFixed(1) : '0.0'}mm</div>`,
+          iconSize: [90, 22]
+        });
+
+        L.marker([s.lat, s.lon], { icon })
+          .bindPopup(`<b>${s.name}</b><br>${s.role}<br>Chuva: ${d.rain ? d.rain.toFixed(1) : 0} mm/h | Rajada: ${Math.round(d.gust || 0)} km/h`)
+          .addTo(layerGroupSentinels);
+      });
+    }
+
+    function buildOfficialMessage(target) {
+      const now = new Date().toLocaleString('pt-BR');
+      const g = appState.stationsData['gericino'] || { temp: 26, rain: 0, gust: 22 };
+      const protocolNum = `SEPPEN-GCR-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random()*9000)}`;
+
+      if (target === 'light') {
+        return `*[SEPPEN-RJ / POLÍCIA PENAL - PROTOCOLO DE EMERGÊNCIA ELÉTRICA]*
+*Protocolo:* ${protocolNum}
+*Data/Hora:* ${now}
+*Unidade Crítica:* Complexo Penitenciário de Gericinó (Bangu - RJ)
+*Referência KML:* Perímetro ID 0C317EEDAF403AD017C9 (-22.841489, -43.482044)
+*Unidades Prioritárias:*
+- Bangu 4 (Penitenciária Jonas Lopes de Carvalho - ID 0E9765F365403AD3CE77)
+- Bangu 3 (Penitenciária Gabriel Ferreira de Castilho - ID 0517582506403AD644E0)
+
+*Diagnóstico Meteorológico CICC:*
+Estágio Operacional ${appState.stage} (${appState.etaText}). Ventos/Rajadas de ${Math.round(g.gust)} km/h e precipitação de ${g.rain.toFixed(1)} mm/h.
+
+*Solicitação à Light S.A. (Grandes Clientes / Subestação Bangu):*
+Solicitamos prioridade máxima de segurança nacional na manutenção dos alimentadores de 13.8kV do Complexo de Gericinó e posicionamento de equipe de prontidão para evitar desligamento das muralhas e dos sistemas de bloqueio celular.`;
+      }
+
+      if (target === 'aguas') {
+        return `*[SEPPEN-RJ / POLÍCIA PENAL - PROTOCOLO DE SEGURANÇA HÍDRICA]*
+*Protocolo:* ${protocolNum}
+*Data/Hora:* ${now}
+*Unidade Crítica:* Complexo Penitenciário de Gericinó (Bangu - RJ)
+*Referência KML:* ID 0C317EEDAF403AD017C9 (-22.841489, -43.482044)
+
+*Diagnóstico Meteorológico CICC:*
+Estágio Operacional ${appState.stage} (${appState.etaText}). Monitoramento ETA Guandu e adutoras da Zona Oeste com risco de oscilação elétrica nas bombas de recalque.
+
+*Solicitação à Águas do Rio:*
+Solicitamos estabilização de pressão na adutora principal do Complexo de Gericinó (Bangu 3 e Bangu 4) e prontidão de caminhões-pipa estratégicos caso ocorra queda de energia no bombeamento.`;
+      }
+
+      if (target === 'claro') {
+        return `*[SEPPEN-RJ / CICC - PROTOCOLO DE INTEGRIDADE DE BLOQUEIO CELULAR]*
+*Protocolo:* ${protocolNum}
+*Data/Hora:* ${now}
+*Local:* Complexo Penitenciário de Gericinó (Bangu - RJ)
+
+*Zonas KML de Bloqueio Monitoradas:*
+1. Area Bloqueada 1 JL (Area de Bloqueio 2 / Bangu 4 Norte) - Polígono ID 017F0B63C4403AE62849 / Pin ID 07CFCC5D9C403AE76FD0 (-22.836793, -43.477348)
+2. Area Bloqueada 2 JL (Area de Bloqueio / Bangu 4 Sul) - Polígono ID 0FE34A72C5403AE582AF / Pin ID 0671F6E5CD403AE6AA37 (-22.837412, -43.477078)
+3. Área Bloqueada Bangu 3 GC - Polígono ID 06D2ED6C11403AE49321 / Pin ID 04F8745453403AE9FEC1 (-22.838953, -43.478530)
+
+*Diagnóstico Climático:*
+Chuva de ${g.rain.toFixed(1)} mm/h e rajadas de ${Math.round(g.gust)} km/h (${appState.etaText}).
+
+*Solicitação à Claro S.A. / Operação CICC:*
+Solicitamos verificação remota imediata de relação sinal-ruído, compensação de atenuação por chuva e checagem de autonomia de Nobreaks/Baterias nas 3 áreas bloqueadas.`;
+      }
+
+      if (target === 'engenharia') {
+        return `*[ORDEM DE SERVIÇO INTERNA - ENGENHARIA E MANUTENÇÃO SEPPEN-RJ]*
+*Protocolo:* ${protocolNum}
+*Data/Hora:* ${now}
+*Determinação:*
+1. Inspecionar e realizar partida preventiva nos Grupos Geradores de Bangu 3 (GC - ID 0517582506403AD644E0) e Bangu 4 (JL - ID 0E9765F365403AD3CE77);
+2. Verificar nível de óleo diesel (meta mínima: 48h de autonomia) e Quadros de Transferência Automática (QTA);
+3. Garantir pressurização das cisternas internas (meta: 72h) antes da chegada da frente meteorológica (${appState.etaText}).`;
+      }
+
+      return `*[ORDEM OPERACIONAL TÁTICA - GSI / SOE / DIREÇÕES BANGU 3 E BANGU 4]*
+*Protocolo:* ${protocolNum}
+*Data/Hora:* ${now}
+*Situação Climática:* Estágio ${appState.stage} (${appState.etaText}) — Rajadas de ${Math.round(g.gust)} km/h.
+*Determinação:*
+1. Reforçar vigilância nos postos de muralha e perímetro KML (ID 0C317EEDAF403AD017C9);
+2. Suspender movimentações externas não essenciais durante passagem de instabilidade severa;
+3. Executar ronda de verificação de sinal RF adjacente às 3 Áreas Bloqueadas (IDs 017F0B63C4403AE62849, 0FE34A72C5403AE582AF e 06D2ED6C11403AE49321).`;
+    }
+
+    let _trapKbd = null, _prevFocus = null;
+    function _openModal(el) {
+      _prevFocus = document.activeElement;
+      el.classList.remove('hidden'); el.classList.add('flex');
+      document.querySelectorAll('body > *:not([id$="Modal"])').forEach(n => n.setAttribute('inert', ''));
+      const focusable = () => [...el.querySelectorAll(
+        'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'
+      )];
+      setTimeout(() => { const f = focusable()[0]; if (f) f.focus(); }, 50);
+      if (_trapKbd) document.removeEventListener('keydown', _trapKbd);
+      _trapKbd = (e) => {
+        if (e.key === 'Escape') { _closeModal(el); return; }
+        if (e.key !== 'Tab') return;
+        const els = focusable();
+        if (!els.length) return;
+        if (e.shiftKey && document.activeElement === els[0]) {
+          e.preventDefault(); els[els.length - 1].focus();
+        } else if (!e.shiftKey && document.activeElement === els[els.length - 1]) {
+          e.preventDefault(); els[0].focus();
+        }
+      };
+      document.addEventListener('keydown', _trapKbd);
+    }
+    function _closeModal(el) {
+      el.classList.add('hidden'); el.classList.remove('flex');
+      document.querySelectorAll('body > *:not([id$="Modal"])').forEach(n => n.removeAttribute('inert'));
+      if (_trapKbd) { document.removeEventListener('keydown', _trapKbd); _trapKbd = null; }
+      if (_prevFocus) { _prevFocus.focus(); _prevFocus = null; }
+    }
+
+    function openProtocolModal(target) {
+      appState.activeModalTarget = target;
+      const titles = {
+        light: '⚡ Acionamento Oficial — Light S.A. (Subestação Gericinó)',
+        aguas: '💧 Acionamento Oficial — Águas do Rio (Adutora Bangu/Guandu)',
+        claro: '📡 Acionamento Oficial — Claro S.A. / CICC (3 Áreas de Bloqueio KML)',
+        engenharia: '🛠️ Ordem Interna — Engenharia e Infraestrutura SEPPEN-RJ',
+        seguranca: '🛡️ Ordem Tática — GSI / SOE e Direções de Bangu 3 e Bangu 4'
+      };
+      document.getElementById('modalTitle').textContent = titles[target] || 'Protocolo Oficial';
+      document.getElementById('modalMessageText').value = buildOfficialMessage(target);
+      _openModal(document.getElementById('protocolModal'));
+    }
+
+    function closeProtocolModal() {
+      _closeModal(document.getElementById('protocolModal'));
+    }
+
+    function copyProtocolText() {
+      const txt = document.getElementById('modalMessageText').value;
+      const btn = document.getElementById('btnCopyProtocol');
+      navigator.clipboard.writeText(txt).then(() => {
+        if (btn) {
+          btn.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5"></i> Copiado!';
+          btn.classList.add('bg-emerald-700', 'text-emerald-100');
+          btn.classList.remove('bg-slate-800', 'hover:bg-slate-700', 'text-slate-200');
+          lucide.createIcons({ nodes: [btn] });
+          setTimeout(() => {
+            btn.innerHTML = '<i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar Texto';
+            btn.classList.remove('bg-emerald-700', 'text-emerald-100');
+            btn.classList.add('bg-slate-800', 'hover:bg-slate-700', 'text-slate-200');
+            lucide.createIcons({ nodes: [btn] });
+          }, 1800);
+        }
+      }).catch(() => {});
+      addAuditLog(`Protocolo copiado para a área de transferência (${appState.activeModalTarget.toUpperCase()}).`);
+    }
+
+    function sendWhatsApp(target) {
+      appState.activeModalTarget = target;
+      const msg = buildOfficialMessage(target);
+      const url = `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+      addAuditLog(`Despacho WhatsApp iniciado para: ${target.toUpperCase()}`);
+    }
+
+    function confirmWhatsAppSend() {
+      const phone = (document.getElementById('modalPhoneInput').value || '').replace(/\D/g, '');
+      const msg = document.getElementById('modalMessageText').value;
+      const url = phone
+        ? `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`
+        : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+      window.open(url, '_blank');
+      addAuditLog(`Protocolo enviado via WhatsApp para ${appState.activeModalTarget.toUpperCase()}`);
+      closeProtocolModal();
+    }
+
+    function toggleSecretaryModal() {
+      const m = document.getElementById('secretaryModal');
+      if (m.classList.contains('hidden')) {
+        _openModal(m);
+      } else {
+        _closeModal(m);
+      }
+    }
+
+    function speakExecutiveBriefing() {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const text = `Boletim Executivo SEPPEN Rio de Janeiro. Complexo de Gericinó operando em Estágio ${appState.stage}. ${document.getElementById('executiveSummaryText').textContent}. Status de Energia Light: ${appState.lightRisk}. Status Águas do Rio: ${appState.waterRisk}. Status das três zonas de bloqueio celular da Claro em Bangu 3 e Bangu 4: ${appState.claroRisk}.`;
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'pt-BR';
+      utter.rate = 1.03;
+      window.speechSynthesis.speak(utter);
+      addAuditLog('Resumo executivo por voz reproduzido.');
+    }
+
+    function addAuditLog(message) {
+      const list = document.getElementById('auditLogList');
+      const time = new Date().toLocaleTimeString('pt-BR');
+      const div = document.createElement('div');
+      div.className = 'py-1 border-b border-slate-800/70 flex items-start gap-1.5';
+      div.innerHTML = `<span class="text-blue-400 shrink-0">[${time}]</span> <span>${message}</span>`;
+      list.prepend(div);
+    }
+
+    function exportAuditReport() {
+      const items = Array.from(document.getElementById('auditLogList').children).map(el => el.innerText).join('\n');
+      const header = `RELATÓRIO DE AUDITORIA CICC & SEPPEN-RJ — COMPLEXO DE GERICINÓ\nGerado em: ${new Date().toLocaleString('pt-BR')}\nKML Project ID: ${KML_ORIGINAL.projectId}\n----------------------------------------\n`;
+      const blob = new Blob([header + items], { type: 'text/plain;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `relatorio-cicc-gericino-${Date.now()}.txt`;
+      a.click();
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      document.querySelectorAll('[data-lucide]').forEach(el => el.setAttribute('aria-hidden', 'true'));
+      initMap();
+      fetchAllData(false);
+      addAuditLog('Painel CICC SEPPEN-RJ inicializado com Submenus e KML Oficial.');
+      let _dataInterval = setInterval(() => fetchAllData(false), 300000);
+      const _tickClock = () => { document.getElementById('clockDisplay').textContent = new Date().toLocaleTimeString('pt-BR'); };
+      _tickClock();
+      let _clockInterval = setInterval(_tickClock, 1000);
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          clearInterval(_dataInterval);
+          clearInterval(_clockInterval);
+        } else {
+          fetchAllData(false);
+          _dataInterval = setInterval(() => fetchAllData(false), 300000);
+          _tickClock();
+          _clockInterval = setInterval(_tickClock, 1000);
+        }
+      });
+      const _db = (fn, ms) => { let t; return (e) => { clearTimeout(t); t = setTimeout(() => fn(e.target.value), ms); }; };
+      const slTimeline = document.getElementById('radarTimelineSlider');
+      const slOpacity  = document.getElementById('radarOpacitySlider');
+      if (slTimeline) slTimeline.addEventListener('input', _db(seekRadarFrame, 120));
+      if (slOpacity)  slOpacity.addEventListener('input',  _db(setRadarOpacity, 120));
+      const logEl = document.getElementById('auditLogList');
+      if (logEl) {
+        const wrap = logEl.parentElement;
+        const checkScroll = () => wrap.classList.toggle('has-scroll', logEl.scrollHeight > logEl.clientHeight && logEl.scrollTop < logEl.scrollHeight - logEl.clientHeight - 4);
+        logEl.addEventListener('scroll', checkScroll);
+        new MutationObserver(checkScroll).observe(logEl, { childList: true });
+      }
+      ['tablist-left', 'tablist-right'].forEach(tlId => {
+        const tl = document.getElementById(tlId);
+        if (!tl) return;
+        tl.addEventListener('keydown', e => {
+          const tabs = Array.from(tl.querySelectorAll('[role="tab"]'));
+          const cur = tabs.indexOf(document.activeElement);
+          if (cur === -1) return;
+          let next = -1;
+          if (e.key === 'ArrowRight') { e.preventDefault(); next = (cur + 1) % tabs.length; }
+          if (e.key === 'ArrowLeft')  { e.preventDefault(); next = (cur - 1 + tabs.length) % tabs.length; }
+          if (next !== -1) { tabs[next].focus(); tabs[next].click(); }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
