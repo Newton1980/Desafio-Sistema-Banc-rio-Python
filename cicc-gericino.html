@@ -25,6 +25,7 @@
     ::-webkit-scrollbar-track { background: #090d16; }
     ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
     ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+    :focus-visible { outline: 2px solid #3b82f6; outline-offset: 2px; border-radius: 4px; }
 
     .glass {
       background: rgba(13, 20, 36, 0.94);
@@ -186,10 +187,10 @@
 
       <div class="flex items-center gap-1 bg-slate-900/95 border border-slate-700/80 rounded-lg p-1">
         <span class="text-[11px] mono uppercase text-slate-400 px-1 hidden sm:inline">Cenário:</span>
-        <button onclick="setScenario('real')" id="scen-real" class="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-600 text-white transition">Tempo Real</button>
-        <button onclick="setScenario('sp_front')" id="scen-sp" class="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Frente SP (3h)</button>
-        <button onclick="setScenario('sea_storm')" id="scen-sea" class="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Ressaca Mar (2h)</button>
-        <button onclick="setScenario('severe')" id="scen-severe" class="px-2 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Crítico</button>
+        <button onclick="setScenario('real')" id="scen-real" class="px-2 py-1.5 rounded text-[10px] font-semibold bg-emerald-600 text-white transition">Tempo Real</button>
+        <button onclick="setScenario('sp_front')" id="scen-sp" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Frente SP (3h)</button>
+        <button onclick="setScenario('sea_storm')" id="scen-sea" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Ressaca Mar (2h)</button>
+        <button onclick="setScenario('severe')" id="scen-severe" class="px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition">Crítico</button>
       </div>
 
       <button onclick="speakExecutiveBriefing()" aria-label="Resumo de Voz" class="px-2.5 py-1.5 rounded-lg bg-indigo-600/25 hover:bg-indigo-600/40 border border-indigo-500/40 text-indigo-200 text-[10px] font-semibold flex items-center gap-1 transition">
@@ -294,16 +295,16 @@
     <section class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA ESQUERDA -->
-      <div class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1 shrink-0 border border-slate-800">
-        <button onclick="switchLeftSubmenu('clima')" id="tabLeft-clima" class="submenu-btn active px-2 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+      <div role="tablist" aria-label="Submenus de monitoramento" class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1 shrink-0 border border-slate-800">
+        <button role="tab" aria-selected="true" onclick="switchLeftSubmenu('clima')" id="tabLeft-clima" class="submenu-btn active px-2 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="cloud-sun-rain" class="w-4 h-4 text-blue-400"></i>
           <span>1. Clima Local</span>
         </button>
-        <button onclick="switchLeftSubmenu('frentes')" id="tabLeft-frentes" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" onclick="switchLeftSubmenu('frentes')" id="tabLeft-frentes" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
           <span>2. Frentes SP/Mar</span>
         </button>
-        <button onclick="switchLeftSubmenu('autonomia')" id="tabLeft-autonomia" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" onclick="switchLeftSubmenu('autonomia')" id="tabLeft-autonomia" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
           <span>3. Luz, Água e RF</span>
         </button>
@@ -624,20 +625,20 @@
     <section class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA DIREITA -->
-      <div class="glass rounded-xl p-1.5 grid grid-cols-4 gap-1 shrink-0 border border-slate-800">
-        <button onclick="switchRightSubmenu('kml')" id="tabRight-kml" class="submenu-btn active px-1.5 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+      <div role="tablist" aria-label="Submenus de acionamento e log" class="glass rounded-xl p-1.5 grid grid-cols-4 gap-1 shrink-0 border border-slate-800">
+        <button role="tab" aria-selected="true" onclick="switchRightSubmenu('kml')" id="tabRight-kml" class="submenu-btn active px-1.5 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="map-pin" class="w-4 h-4 text-fuchsia-400"></i>
           <span>4. KML (6)</span>
         </button>
-        <button onclick="switchRightSubmenu('externo')" id="tabRight-externo" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('externo')" id="tabRight-externo" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="phone-forwarded" class="w-4 h-4 text-amber-400"></i>
           <span>5. Externo</span>
         </button>
-        <button onclick="switchRightSubmenu('interno')" id="tabRight-interno" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('interno')" id="tabRight-interno" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
           <span>6. SEPPEN</span>
         </button>
-        <button onclick="switchRightSubmenu('log')" id="tabRight-log" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('log')" id="tabRight-log" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
           <span>7. Diário</span>
         </button>
@@ -1024,10 +1025,12 @@
           panel.classList.remove('hidden');
           panel.classList.add('flex');
           btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
         } else {
           panel.classList.add('hidden');
           panel.classList.remove('flex');
           btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
         }
       });
     }
@@ -1041,10 +1044,12 @@
           panel.classList.remove('hidden');
           panel.classList.add('flex');
           btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
         } else {
           panel.classList.add('hidden');
           panel.classList.remove('flex');
           btn.classList.remove('active');
+          btn.setAttribute('aria-selected', 'false');
         }
       });
     }
@@ -1651,6 +1656,7 @@
         });
         document.getElementById('apiStatusBadge').textContent = '● CONTINGÊNCIA LOCAL';
         document.getElementById('apiStatusBadge').className = 'text-[11px] mono text-amber-400';
+        document.getElementById('executiveSummaryText')?.removeAttribute('data-loading');
       }
 
       applyScenarioModifiers();
