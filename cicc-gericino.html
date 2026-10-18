@@ -180,7 +180,7 @@
     <!-- Controles Globais e Cenários -->
     <div class="flex items-center gap-1.5 flex-wrap">
       <!-- Seletor de Modo de Layout (Submenus vs Expandido) -->
-      <button onclick="toggleAllSubmenusMode()" id="btnLayoutMode" aria-label="Alternar modo de layout" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Alternar entre organização por Submenus ou Todos os Painéis Abertos">
+      <button onclick="toggleAllSubmenusMode()" id="btnLayoutMode" aria-label="Alternar modo de layout" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Alternar entre organização por Submenus ou Todos os Painéis Abertos">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400"></i>
         <span id="layoutModeText">Modo: Submenus</span>
       </button>
@@ -216,7 +216,7 @@
   </header>
 
   <!-- FAIXA EXECUTIVA DE LEITURA EM 3 SEGUNDOS (5 KPIs SEMPRE VISÍVEIS) -->
-  <section class="bg-slate-950/95 border-b border-slate-800/90 px-3 py-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 shrink-0 z-20">
+  <section aria-label="Indicadores de estado operacional" class="bg-slate-950/95 border-b border-slate-800/90 px-3 py-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 shrink-0 z-20">
     <div onclick="switchLeftSubmenu('clima')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-emerald-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardStage">
       <div class="flex items-center justify-between">
         <span class="text-[11px] mono uppercase text-slate-400 font-semibold">1. Nível Operacional</span>
@@ -292,19 +292,19 @@
   <main class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-3 p-3 xl:overflow-hidden">
 
     <!-- COLUNA ESQUERDA: SUBMENUS DE MONITORAMENTO (PASSOS 1, 2 E 3) -->
-    <section class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+    <section aria-label="Monitoramento meteorológico e climatológico" class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA ESQUERDA -->
       <div role="tablist" aria-label="Submenus de monitoramento" class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1 shrink-0 border border-slate-800">
-        <button role="tab" aria-selected="true" onclick="switchLeftSubmenu('clima')" id="tabLeft-clima" class="submenu-btn active px-2 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="true" aria-controls="panelLeft-clima" onclick="switchLeftSubmenu('clima')" id="tabLeft-clima" class="submenu-btn active px-2 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="cloud-sun-rain" class="w-4 h-4 text-blue-400"></i>
           <span>1. Clima Local</span>
         </button>
-        <button role="tab" aria-selected="false" onclick="switchLeftSubmenu('frentes')" id="tabLeft-frentes" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" aria-controls="panelLeft-frentes" onclick="switchLeftSubmenu('frentes')" id="tabLeft-frentes" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="compass" class="w-4 h-4 text-cyan-400"></i>
           <span>2. Frentes SP/Mar</span>
         </button>
-        <button role="tab" aria-selected="false" onclick="switchLeftSubmenu('autonomia')" id="tabLeft-autonomia" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" aria-controls="panelLeft-autonomia" onclick="switchLeftSubmenu('autonomia')" id="tabLeft-autonomia" class="submenu-btn px-2 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
           <span>3. Luz, Água e RF</span>
         </button>
@@ -314,7 +314,7 @@
       <div class="flex-1 flex flex-col gap-2.5 xl:overflow-y-auto xl:pr-0.5">
 
         <!-- SUBMENU 1: DIAGNÓSTICO E TELEMETRIA DE GERICINÓ -->
-        <div id="panelLeft-clima" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
+        <div id="panelLeft-clima" role="tabpanel" aria-labelledby="tabLeft-clima" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -397,7 +397,7 @@
         </div>
 
         <!-- SUBMENU 2: MONITORAMENTO ANTECIPADO (SENTINELAS SP / ALTO-MAR / SERRA DO PILOTO) -->
-        <div id="panelLeft-frentes" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+        <div id="panelLeft-frentes" role="tabpanel" aria-labelledby="tabLeft-frentes" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -418,7 +418,7 @@
         </div>
 
         <!-- SUBMENU 3: IMPACTO E AUTONOMIA DE SERVIÇOS CRÍTICOS -->
-        <div id="panelLeft-autonomia" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+        <div id="panelLeft-autonomia" role="tabpanel" aria-labelledby="tabLeft-autonomia" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -505,7 +505,7 @@
     </section>
 
     <!-- COLUNA CENTRAL: MAPA SATÉLITE KML + BARRAS ACOPLADAS DE RADAR E LEGENDA -->
-    <section class="xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
+    <section aria-label="Mapa operacional e radar meteorológico" class="xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
       <div class="glass rounded-xl p-2.5 flex-1 flex flex-col border border-slate-800 min-h-[300px] xl:min-h-[540px]">
 
         <!-- Barra Superior do Mapa: Navegação KML + Camadas -->
@@ -567,7 +567,7 @@
           <!-- Linha 1: Player do Radar e Deslocamento de Frentes -->
           <div class="bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
-              <button onclick="toggleRadarAnimation()" id="btnPlayRadar" class="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold flex items-center gap-1 shadow">
+              <button onclick="toggleRadarAnimation()" id="btnPlayRadar" aria-pressed="true" aria-label="Animação de frentes meteorológicas" class="px-2.5 py-1 rounded bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] font-bold flex items-center gap-1 shadow">
                 <span id="playRadarIcon">⏸</span>
                 <span id="playRadarText">Animando Frentes</span>
               </button>
@@ -622,23 +622,23 @@
     </section>
 
     <!-- COLUNA DIREITA: SUBMENUS DE GEOMETRIAS KML, ACIONAMENTOS E LOG (PASSOS 4 A 7) -->
-    <section class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+    <section aria-label="Acionamento operacional e registro de eventos" class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA DIREITA -->
       <div role="tablist" aria-label="Submenus de acionamento e log" class="glass rounded-xl p-1.5 grid grid-cols-4 gap-1 shrink-0 border border-slate-800">
-        <button role="tab" aria-selected="true" onclick="switchRightSubmenu('kml')" id="tabRight-kml" class="submenu-btn active px-1.5 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="true" aria-controls="panelRight-kml" onclick="switchRightSubmenu('kml')" id="tabRight-kml" class="submenu-btn active px-1.5 py-2 rounded-lg border border-transparent text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="map-pin" class="w-4 h-4 text-fuchsia-400"></i>
           <span>4. KML (6)</span>
         </button>
-        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('externo')" id="tabRight-externo" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" aria-controls="panelRight-externo" onclick="switchRightSubmenu('externo')" id="tabRight-externo" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="phone-forwarded" class="w-4 h-4 text-amber-400"></i>
           <span>5. Externo</span>
         </button>
-        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('interno')" id="tabRight-interno" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" aria-controls="panelRight-interno" onclick="switchRightSubmenu('interno')" id="tabRight-interno" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="shield-alert" class="w-4 h-4 text-indigo-400"></i>
           <span>6. SEPPEN</span>
         </button>
-        <button role="tab" aria-selected="false" onclick="switchRightSubmenu('log')" id="tabRight-log" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
+        <button role="tab" aria-selected="false" aria-controls="panelRight-log" onclick="switchRightSubmenu('log')" id="tabRight-log" class="submenu-btn px-1.5 py-2 rounded-lg border border-transparent text-slate-300 hover:bg-slate-800/70 text-[10px] font-bold flex flex-col items-center justify-center gap-1 text-center">
           <i data-lucide="file-text" class="w-4 h-4 text-emerald-400"></i>
           <span>7. Diário</span>
         </button>
@@ -648,7 +648,7 @@
       <div class="flex-1 flex flex-col gap-2.5 xl:overflow-y-auto xl:pl-0.5">
 
         <!-- SUBMENU 4: INVENTÁRIO KML E STATUS DAS 3 ÁREAS DE BLOQUEIO -->
-        <div id="panelRight-kml" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
+        <div id="panelRight-kml" role="tabpanel" aria-labelledby="tabRight-kml" class="glass rounded-xl p-3.5 border border-slate-800 flex-1 flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -662,7 +662,7 @@
         </div>
 
         <!-- SUBMENU 5: ACIONAMENTO EXTERNO (CONCESSIONÁRIAS) -->
-        <div id="panelRight-externo" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+        <div id="panelRight-externo" role="tabpanel" aria-labelledby="tabRight-externo" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -719,7 +719,7 @@
         </div>
 
         <!-- SUBMENU 6: ACIONAMENTO INTERNO SEPPEN-RJ -->
-        <div id="panelRight-interno" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+        <div id="panelRight-interno" role="tabpanel" aria-labelledby="tabRight-interno" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -756,7 +756,7 @@
         </div>
 
         <!-- SUBMENU 7: DIÁRIO OFICIAL DE EVENTOS (CICC) -->
-        <div id="panelRight-log" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
+        <div id="panelRight-log" role="tabpanel" aria-labelledby="tabRight-log" class="glass rounded-xl p-3.5 border border-slate-800 hidden flex-1 flex-col justify-between">
           <div class="flex-1 flex flex-col">
             <div class="flex items-center justify-between mb-2.5">
               <div>
@@ -768,7 +768,7 @@
               </button>
             </div>
             <div class="audit-log-wrap flex-1">
-              <div id="auditLogList" class="space-y-1.5 text-[10px] mono text-slate-300 overflow-y-auto max-h-80 pr-1 bg-slate-950/70 p-2.5 rounded-xl border border-slate-800"></div>
+              <div id="auditLogList" role="log" aria-label="Diário de eventos CICC" aria-live="polite" aria-atomic="false" class="space-y-1.5 text-[10px] mono text-slate-300 overflow-y-auto max-h-80 pr-1 bg-slate-950/70 p-2.5 rounded-xl border border-slate-800"></div>
             </div>
           </div>
         </div>
@@ -1057,17 +1057,22 @@
     function toggleAllSubmenusMode() {
       allSubmenusExpanded = !allSubmenusExpanded;
       const label = document.getElementById('layoutModeText');
+      document.getElementById('btnLayoutMode').setAttribute('aria-pressed', String(allSubmenusExpanded));
       if (allSubmenusExpanded) {
         label.textContent = 'Modo: Tudo Aberto';
         ['clima', 'frentes', 'autonomia'].forEach(k => {
           document.getElementById(`panelLeft-${k}`).classList.remove('hidden');
           document.getElementById(`panelLeft-${k}`).classList.add('flex');
-          document.getElementById(`tabLeft-${k}`).classList.add('active');
+          const btn = document.getElementById(`tabLeft-${k}`);
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
         });
         ['kml', 'externo', 'interno', 'log'].forEach(k => {
           document.getElementById(`panelRight-${k}`).classList.remove('hidden');
           document.getElementById(`panelRight-${k}`).classList.add('flex');
-          document.getElementById(`tabRight-${k}`).classList.add('active');
+          const btn = document.getElementById(`tabRight-${k}`);
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
         });
       } else {
         label.textContent = 'Modo: Submenus';
@@ -1523,12 +1528,14 @@
       appState.radarPlaying = !appState.radarPlaying;
       document.getElementById('playRadarIcon').textContent = appState.radarPlaying ? '⏸' : '▶';
       document.getElementById('playRadarText').textContent = appState.radarPlaying ? 'Animando Frentes' : 'Pausado';
+      document.getElementById('btnPlayRadar').setAttribute('aria-pressed', String(appState.radarPlaying));
     }
 
     function seekRadarFrame(val) {
       appState.radarPlaying = false;
       document.getElementById('playRadarIcon').textContent = '▶';
       document.getElementById('playRadarText').textContent = 'Pausado';
+      document.getElementById('btnPlayRadar').setAttribute('aria-pressed', 'false');
       applyRadarFrame(Number(val));
     }
 
@@ -1670,11 +1677,11 @@
       appState.scenario = mode;
       ['real', 'sp', 'sea', 'severe'].forEach(k => {
         const btn = document.getElementById(`scen-${k}`);
-        if (btn) btn.className = 'px-2 py-0.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition';
+        if (btn) btn.className = 'px-2 py-1.5 rounded text-[10px] font-semibold text-slate-300 hover:bg-slate-800 transition';
       });
       const mapBtn = { real: 'scen-real', sp_front: 'scen-sp', sea_storm: 'scen-sea', severe: 'scen-severe' }[mode];
       const activeBtn = document.getElementById(mapBtn);
-      if (activeBtn) activeBtn.className = 'px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-600 text-white transition';
+      if (activeBtn) activeBtn.className = 'px-2 py-1.5 rounded text-[10px] font-semibold bg-blue-600 text-white transition';
 
       fetchAllData(false);
       addAuditLog(`Modo de visualização alterado para: ${mode.toUpperCase()}`);
