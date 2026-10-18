@@ -162,6 +162,97 @@
       font-size: 10px;
       font-weight: 600;
     }
+
+    /* ── MODO IMERSIVO (Opção A) ─────────────────────────────────── */
+    .immersive-left,
+    .immersive-right {
+      transition: width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+    }
+
+    body.immersive-mode .immersive-left,
+    body.immersive-mode .immersive-right {
+      width: 0 !important;
+      min-width: 0 !important;
+      max-width: 0 !important;
+      overflow: hidden;
+      opacity: 0;
+      padding: 0;
+      gap: 0;
+      pointer-events: none;
+    }
+
+    body.immersive-mode .immersive-map {
+      grid-column: span 12 !important;
+    }
+
+    /* Cards glassmorphism flutuantes */
+    .glass-card-overlay {
+      display: none;
+      position: absolute;
+      z-index: 600;
+      background: rgba(7, 11, 24, 0.72);
+      backdrop-filter: blur(14px) saturate(1.5);
+      -webkit-backdrop-filter: blur(14px) saturate(1.5);
+      border: 1px solid rgba(148, 163, 184, 0.13);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 160px;
+      pointer-events: auto;
+    }
+
+    body.immersive-mode .glass-card-overlay {
+      display: block;
+    }
+
+    .glass-card-overlay .gc-label {
+      font-size: 9px;
+      font-family: 'JetBrains Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgb(100 116 139);
+      font-weight: 700;
+    }
+
+    .glass-card-overlay .gc-value {
+      font-size: 13px;
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      color: #f1f5f9;
+      line-height: 1.2;
+      margin-top: 1px;
+    }
+
+    .glass-card-overlay .gc-sub {
+      font-size: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgb(148 163 184);
+      margin-top: 1px;
+    }
+
+    #glassCardTimeline {
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      min-width: 320px;
+      max-width: 480px;
+      width: max-content;
+    }
+
+    /* Botão imersivo — anel âmbar quando ativo */
+    #btnImmersive[aria-pressed="true"] {
+      background: rgba(217, 119, 6, 0.2);
+      border-color: rgba(251, 191, 36, 0.5);
+      color: rgb(253 230 138);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .immersive-left,
+      .immersive-right,
+      body.immersive-mode .immersive-left,
+      body.immersive-mode .immersive-right {
+        transition: none;
+      }
+    }
   </style>
 </head>
 <body class="min-h-screen xl:h-screen xl:overflow-hidden flex flex-col">
@@ -189,6 +280,11 @@
       <button onclick="toggleAllSubmenusMode()" id="btnLayoutMode" aria-label="Alternar modo de layout" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Alternar entre organização por Submenus ou Todos os Painéis Abertos">
         <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-cyan-400"></i>
         <span id="layoutModeText">Modo: Submenus</span>
+      </button>
+
+      <button onclick="toggleImmersiveMode()" id="btnImmersive" aria-label="Maximizar visualização do mapa" aria-pressed="false" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200 text-[10px] font-semibold flex items-center gap-1.5 transition" title="Modo imersivo: mapa expandido com cards flutuantes">
+        <i data-lucide="maximize-2" id="immersiveIcon" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span class="hidden sm:inline">Mapa Máximo</span>
       </button>
 
       <div role="group" aria-label="Modo de visualização" class="flex items-center gap-1 bg-slate-900/95 border border-slate-700/80 rounded-lg p-1">
@@ -298,7 +394,7 @@
   <main class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-3 p-3 xl:overflow-hidden">
 
     <!-- COLUNA ESQUERDA: SUBMENUS DE MONITORAMENTO (PASSOS 1, 2 E 3) -->
-    <section aria-label="Monitoramento meteorológico e climatológico" class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+    <section aria-label="Monitoramento meteorológico e climatológico" id="colLeft" class="immersive-left xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA ESQUERDA -->
       <div id="tablist-left" role="tablist" aria-label="Submenus de monitoramento" class="glass rounded-xl p-1.5 grid grid-cols-3 gap-1 shrink-0 border border-slate-800">
@@ -511,7 +607,7 @@
     </section>
 
     <!-- COLUNA CENTRAL: MAPA SATÉLITE KML + BARRAS ACOPLADAS DE RADAR E LEGENDA -->
-    <section aria-label="Mapa operacional e radar meteorológico" class="xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
+    <section aria-label="Mapa operacional e radar meteorológico" id="colMap" class="immersive-map xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
       <div class="glass rounded-xl p-2.5 flex-1 flex flex-col border border-slate-800 min-h-[300px] xl:min-h-[540px]">
 
         <!-- Barra Superior do Mapa: Navegação KML + Camadas -->
@@ -549,6 +645,49 @@
         <!-- Container Limpo do Mapa Satélite (Sem caixas grandes tampando os polígonos) -->
         <div class="relative flex-1 rounded-xl overflow-hidden border border-slate-800 min-h-[260px] xl:min-h-[380px]">
           <div id="map" class="w-full h-full min-h-[260px] xl:min-h-[380px]"></div>
+
+          <!-- CARD GLASS 1: Status Operacional (topo esquerdo) -->
+          <div id="glassCardStatus" class="glass-card-overlay" style="top:12px;left:12px;">
+            <div class="gc-label">Status Operacional</div>
+            <div class="gc-value" id="gcRisk">RISCO BAIXO</div>
+            <div class="gc-sub" id="gcStage">ESTÁGIO 1 • NORMAL</div>
+          </div>
+
+          <!-- CARD GLASS 2: Telemetria Crítica (topo direito) -->
+          <div id="glassCardTelemetry" class="glass-card-overlay" style="top:12px;right:12px;text-align:right;">
+            <div class="gc-label" style="margin-bottom:4px;">Telemetria Crítica</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;">
+              <div>
+                <div class="gc-label">Temp</div>
+                <div class="gc-value" id="gcTemp">--°C</div>
+              </div>
+              <div>
+                <div class="gc-label">Chuva 1h</div>
+                <div class="gc-value" id="gcRain" style="color:rgb(103 232 249)">0.0 mm</div>
+              </div>
+              <div>
+                <div class="gc-label">Rajada</div>
+                <div class="gc-value" id="gcWind">-- km/h</div>
+              </div>
+              <div>
+                <div class="gc-label">Umidade</div>
+                <div class="gc-value" id="gcHum">--%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- CARD GLASS 3: Linha do Tempo Radar (borda inferior) -->
+          <div id="glassCardTimeline" class="glass-card-overlay" style="bottom:12px;left:50%;transform:translateX(-50%);min-width:320px;">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              <div class="gc-label" style="white-space:nowrap;">Radar</div>
+              <span id="gcRadarLabel" class="gc-value" style="font-size:11px;">AGORA (T+0)</span>
+              <input id="gcRadarSlider" type="range" min="0" max="10" value="5"
+                style="flex:1;min-width:120px;accent-color:#22d3ee;cursor:pointer;height:4px;background:#1e293b;border-radius:4px;"
+                aria-label="Radar — linha do tempo (modo imersivo)"
+                oninput="document.getElementById('radarTimelineSlider').value=this.value;document.getElementById('radarTimelineSlider').dispatchEvent(new Event('input'))">
+              <span class="gc-sub" style="white-space:nowrap;">+2h Prev</span>
+            </div>
+          </div>
 
           <!-- Radar Varredura Overlay Suave -->
           <div id="radarSweepOverlay" class="absolute inset-0 pointer-events-none flex items-center justify-center z-[400] opacity-20">
@@ -628,7 +767,7 @@
     </section>
 
     <!-- COLUNA DIREITA: SUBMENUS DE GEOMETRIAS KML, ACIONAMENTOS E LOG (PASSOS 4 A 7) -->
-    <section aria-label="Acionamento operacional e registro de eventos" class="xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
+    <section aria-label="Acionamento operacional e registro de eventos" id="colRight" class="immersive-right xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
 
       <!-- BARRA DE SUBMENUS DA COLUNA DIREITA -->
       <div id="tablist-right" role="tablist" aria-label="Submenus de acionamento e log" class="glass rounded-xl p-1.5 grid grid-cols-4 gap-1 shrink-0 border border-slate-800">
@@ -1088,6 +1227,52 @@
     }
 
     // ============================================================================
+    // MODO IMERSIVO — toggle mapa expandido com cards glassmorphism
+    // ============================================================================
+    let _immersiveActive = false;
+
+    function _syncGlassCards() {
+      const risk = document.getElementById('currentRiskBadge');
+      const stage = document.getElementById('kpiStageTitle');
+      const temp = document.getElementById('valTemp');
+      const rain = document.getElementById('valRain');
+      const wind = document.getElementById('valWind');
+      const hum  = document.getElementById('valHum');
+      if (risk)  document.getElementById('gcRisk').textContent  = risk.textContent;
+      if (stage) document.getElementById('gcStage').textContent = stage.textContent;
+      if (temp)  document.getElementById('gcTemp').textContent  = temp.textContent;
+      if (rain)  document.getElementById('gcRain').textContent  = rain.textContent;
+      if (wind)  document.getElementById('gcWind').textContent  = wind.textContent;
+      if (hum)   document.getElementById('gcHum').textContent   = hum.textContent;
+      const radarLabel = document.getElementById('radarFrameLabel');
+      if (radarLabel) document.getElementById('gcRadarLabel').textContent = radarLabel.textContent;
+      const slider = document.getElementById('radarTimelineSlider');
+      const gcSlider = document.getElementById('gcRadarSlider');
+      if (slider && gcSlider) gcSlider.value = slider.value;
+    }
+
+    function toggleImmersiveMode() {
+      _immersiveActive = !_immersiveActive;
+      const btn = document.getElementById('btnImmersive');
+      const icon = document.getElementById('immersiveIcon');
+      btn.setAttribute('aria-pressed', String(_immersiveActive));
+      if (_immersiveActive) {
+        document.body.classList.add('immersive-mode');
+        if (icon) { icon.setAttribute('data-lucide', 'minimize-2'); lucide.createIcons(); }
+        btn.title = 'Sair do modo imersivo';
+        _syncGlassCards();
+        // sincroniza novamente após dados atualizarem
+        setTimeout(_syncGlassCards, 500);
+      } else {
+        document.body.classList.remove('immersive-mode');
+        if (icon) { icon.setAttribute('data-lucide', 'maximize-2'); lucide.createIcons(); }
+        btn.title = 'Modo imersivo: mapa expandido com cards flutuantes';
+      }
+      // força Leaflet a recalcular o tamanho do mapa
+      if (window._map) setTimeout(() => window._map.invalidateSize(), 320);
+    }
+
+    // ============================================================================
     // SENTINELAS METEOROLÓGICAS
     // ============================================================================
     const SENTINEL_STATIONS = [
@@ -1129,6 +1314,7 @@
         zoom: 15,
         zoomControl: true
       });
+      window._map = map;
 
       L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 20,
@@ -1683,6 +1869,7 @@
       applyRadarFrame(appState.currentFrameIndex);
       if (manual) addAuditLog('Sincronização meteorológica realizada (Open-Meteo + DECEA REDEMET).');
       if (icon) setTimeout(() => icon.classList.remove('animate-spin'), 400);
+      if (_immersiveActive) _syncGlassCards();
     }
 
     function setScenario(mode) {
