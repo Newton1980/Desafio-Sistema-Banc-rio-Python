@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root { color-scheme: dark; }
+    input, textarea, select { color-scheme: dark; }
     * { box-sizing: border-box; }
     body {
       font-family: 'Inter', sans-serif;
@@ -199,11 +200,11 @@
         <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiStageTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 tracking-tight">ESTÁGIO 1 • NORMAL</div>
+        <div id="kpiStageTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 tracking-tight mono">ESTÁGIO 1 • NORMAL</div>
         <div id="kpiStageSub" class="text-[11px] text-slate-400 truncate">Rotina preservada</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="kpiStageBar" class="h-full bg-emerald-500 transition-all duration-300" style="width: 25%"></div>
+        <div id="kpiStageBar" class="h-full bg-emerald-500 transition-[width] duration-500" style="width: 25%"></div>
       </div>
     </div>
 
@@ -217,7 +218,7 @@
         <div id="kpiEtaSub" class="text-[11px] text-slate-400 truncate">Corredor SP / Mar limpos</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="kpiEtaBar" class="h-full bg-cyan-400 transition-all duration-300" style="width: 12%"></div>
+        <div id="kpiEtaBar" class="h-full bg-cyan-400 transition-[width] duration-500" style="width: 12%"></div>
       </div>
     </div>
 
@@ -227,11 +228,11 @@
         <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiLightTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">REDE ESTÁVEL</div>
+        <div id="kpiLightTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">REDE ESTÁVEL</div>
         <div id="kpiLightSub" class="text-[11px] text-slate-400 mono">Geradores: 48h diesel</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="kpiLightBar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 92%"></div>
+        <div id="kpiLightBar" class="h-full bg-emerald-400 transition-[width] duration-500" style="width: 92%"></div>
       </div>
     </div>
 
@@ -241,11 +242,11 @@
         <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiWaterTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">PRESSÃO NORMAL</div>
+        <div id="kpiWaterTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">PRESSÃO NORMAL</div>
         <div id="kpiWaterSub" class="text-[11px] text-slate-400 mono">Cisternas: 72h reserva</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="kpiWaterBar" class="h-full bg-blue-400 transition-all duration-300" style="width: 95%"></div>
+        <div id="kpiWaterBar" class="h-full bg-blue-400 transition-[width] duration-500" style="width: 95%"></div>
       </div>
     </div>
 
@@ -255,11 +256,11 @@
         <i data-lucide="radio-tower" class="w-3.5 h-3.5 text-fuchsia-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiClaroTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">3/3 ZONAS ATIVAS</div>
+        <div id="kpiClaroTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 mono">3/3 ZONAS ATIVAS</div>
         <div id="kpiClaroSub" class="text-[11px] text-slate-400 mono">Bangu 3 e Bangu 4 (100%)</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="kpiClaroBar" class="h-full bg-fuchsia-500 transition-all duration-300" style="width: 100%"></div>
+        <div id="kpiClaroBar" class="h-full bg-fuchsia-500 transition-[width] duration-500" style="width: 100%"></div>
       </div>
     </div>
   </section>
@@ -423,7 +424,7 @@
                     <span id="meterLightLabel" class="text-emerald-400">94% • Reserva 48h</span>
                   </div>
                   <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="meterLightBar" class="h-full bg-emerald-400 transition-all duration-300" style="width: 94%"></div>
+                    <div id="meterLightBar" class="h-full bg-emerald-400 transition-[width] duration-500" style="width: 94%"></div>
                   </div>
                 </div>
               </div>
@@ -446,7 +447,7 @@
                     <span id="meterWaterLabel" class="text-blue-400">96% • Reserva 72h</span>
                   </div>
                   <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="meterWaterBar" class="h-full bg-blue-400 transition-all duration-300" style="width: 96%"></div>
+                    <div id="meterWaterBar" class="h-full bg-blue-400 transition-[width] duration-500" style="width: 96%"></div>
                   </div>
                 </div>
               </div>
@@ -469,7 +470,7 @@
                     <span id="meterClaroLabel" class="text-fuchsia-400">100% • 3/3 Zonas</span>
                   </div>
                   <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="meterClaroBar" class="h-full bg-fuchsia-500 transition-all duration-300" style="width: 100%"></div>
+                    <div id="meterClaroBar" class="h-full bg-fuchsia-500 transition-[width] duration-500" style="width: 100%"></div>
                   </div>
                 </div>
               </div>
@@ -553,13 +554,13 @@
 
             <div class="flex-1 min-w-[140px] max-w-xs flex items-center gap-2">
               <span class="text-[11px] mono text-slate-400">-2h</span>
-              <input id="radarTimelineSlider" type="range" min="0" max="10" value="5" oninput="seekRadarFrame(this.value)" aria-label="Linha do tempo do radar" class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+              <input id="radarTimelineSlider" type="range" min="0" max="10" value="5" aria-label="Linha do tempo do radar" class="w-full accent-cyan-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
               <span class="text-[11px] mono text-amber-300">+2h (Prev)</span>
             </div>
 
             <div class="flex items-center gap-1.5">
               <span class="text-[11px] mono text-slate-400">Opacidade:</span>
-              <input id="radarOpacitySlider" type="range" min="20" max="95" value="65" oninput="setRadarOpacity(this.value)" aria-label="Opacidade do radar" class="w-16 accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
+              <input id="radarOpacitySlider" type="range" min="20" max="95" value="65" aria-label="Opacidade do radar" class="w-16 accent-emerald-400 cursor-pointer h-1.5 bg-slate-800 rounded-lg" />
             </div>
           </div>
 
@@ -2129,6 +2130,11 @@ Solicitamos verificação remota imediata de relação sinal-ruído, compensaç�
       fetchAllData(false);
       addAuditLog('Painel CICC SEPPEN-RJ inicializado com Submenus e KML Oficial.');
       setInterval(() => fetchAllData(false), 300000);
+      const _db = (fn, ms) => { let t; return (e) => { clearTimeout(t); t = setTimeout(() => fn(e.target.value), ms); }; };
+      const slTimeline = document.getElementById('radarTimelineSlider');
+      const slOpacity  = document.getElementById('radarOpacitySlider');
+      if (slTimeline) slTimeline.addEventListener('input', _db(seekRadarFrame, 120));
+      if (slOpacity)  slOpacity.addEventListener('input',  _db(setRadarOpacity, 120));
     });
   </script>
 </body>
