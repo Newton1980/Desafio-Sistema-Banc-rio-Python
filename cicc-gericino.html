@@ -101,6 +101,15 @@
       border-radius: 4px !important;
       box-shadow: 0 2px 10px rgba(0,0,0,0.85) !important;
     }
+    .btn-layer-off {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      background: rgb(15 23 42);
+      border: 1px solid rgb(51 65 85);
+      color: rgb(100 116 139);
+      font-size: 10px;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body class="min-h-screen xl:h-screen xl:overflow-hidden flex flex-col">
@@ -156,7 +165,7 @@
 
       <div class="text-right pl-2 border-l border-slate-800 hidden md:block">
         <div id="clockDisplay" class="text-xs font-bold mono text-white">00:00:00</div>
-        <div id="apiStatusBadge" class="text-[11px] mono text-emerald-400">● OPEN-METEO + DECEA</div>
+        <div id="apiStatusBadge" role="status" aria-live="polite" class="text-[11px] mono text-emerald-400">● OPEN-METEO + DECEA</div>
       </div>
     </div>
   </header>
@@ -169,7 +178,7 @@
         <i data-lucide="shield" class="w-3.5 h-3.5 text-emerald-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiStageTitle" class="text-xs font-extrabold text-emerald-400 tracking-tight">ESTÁGIO 1 • NORMAL</div>
+        <div id="kpiStageTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400 tracking-tight">ESTÁGIO 1 • NORMAL</div>
         <div id="kpiStageSub" class="text-[11px] text-slate-400 truncate">Rotina preservada</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -183,7 +192,7 @@
         <i data-lucide="clock" class="w-3.5 h-3.5 text-cyan-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiEtaTitle" class="text-xs font-extrabold text-cyan-300 mono">SEM FRENTE ATIVA</div>
+        <div id="kpiEtaTitle" aria-live="polite" class="text-xs font-extrabold text-cyan-300 mono">SEM FRENTE ATIVA</div>
         <div id="kpiEtaSub" class="text-[11px] text-slate-400 truncate">Corredor SP / Mar limpos</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -197,7 +206,7 @@
         <i data-lucide="zap" class="w-3.5 h-3.5 text-amber-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiLightTitle" class="text-xs font-extrabold text-emerald-400">REDE ESTÁVEL</div>
+        <div id="kpiLightTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">REDE ESTÁVEL</div>
         <div id="kpiLightSub" class="text-[11px] text-slate-400 mono">Geradores: 48h diesel</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -211,7 +220,7 @@
         <i data-lucide="droplets" class="w-3.5 h-3.5 text-blue-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiWaterTitle" class="text-xs font-extrabold text-emerald-400">PRESSÃO NORMAL</div>
+        <div id="kpiWaterTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">PRESSÃO NORMAL</div>
         <div id="kpiWaterSub" class="text-[11px] text-slate-400 mono">Cisternas: 72h reserva</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -225,7 +234,7 @@
         <i data-lucide="radio-tower" class="w-3.5 h-3.5 text-fuchsia-400"></i>
       </div>
       <div class="flex items-baseline justify-between gap-2 my-0.5">
-        <div id="kpiClaroTitle" class="text-xs font-extrabold text-emerald-400">3/3 ZONAS ATIVAS</div>
+        <div id="kpiClaroTitle" aria-live="polite" class="text-xs font-extrabold text-emerald-400">3/3 ZONAS ATIVAS</div>
         <div id="kpiClaroSub" class="text-[11px] text-slate-400 mono">Bangu 3 e Bangu 4 (100%)</div>
       </div>
       <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
@@ -267,10 +276,10 @@
                 <span class="text-[10px] mono uppercase text-blue-400 font-bold">PASSO 1 • EPICENTRO BANGU</span>
                 <h2 class="text-xs font-bold text-white">Diagnóstico e Telemetria em Gericinó</h2>
               </div>
-              <span id="currentRiskBadge" class="text-[10px] mono px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">RISCO BAIXO</span>
+              <span id="currentRiskBadge" role="status" aria-live="polite" class="text-[10px] mono px-2 py-0.5 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">RISCO BAIXO</span>
             </div>
 
-            <p id="executiveSummaryText" class="text-xs text-slate-200 leading-relaxed bg-slate-900/90 p-3 rounded-xl border border-slate-800 mb-3">
+            <p id="executiveSummaryText" aria-live="polite" aria-atomic="false" class="text-xs text-slate-200 leading-relaxed bg-slate-900/90 p-3 rounded-xl border border-slate-800 mb-3">
               Carregando diagnóstico meteorológico de Gericinó...
             </p>
 
@@ -722,7 +731,7 @@
   </main>
 
   <!-- MODAL DE PROTOCOLO OFICIAL -->
-  <div id="protocolModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div id="protocolModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="if(event.target===this)closeProtocolModal()" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="glass rounded-2xl max-w-xl w-full p-5 border border-slate-700 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div>
@@ -756,14 +765,14 @@
   </div>
 
   <!-- MODAL: GUIA EXECUTIVO PARA A SECRETÁRIA SEPPEN-RJ -->
-  <div id="secretaryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+  <div id="secretaryModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center p-4" onclick="if(event.target===this)toggleSecretaryModal()" role="dialog" aria-modal="true" aria-labelledby="secretaryModalTitle">
     <div class="glass rounded-2xl max-w-2xl w-full p-5 border border-amber-500/40 shadow-2xl">
       <div class="flex items-center justify-between pb-3 border-b border-slate-800">
         <div class="flex items-center gap-2">
           <i data-lucide="award" class="w-5 h-5 text-amber-400"></i>
           <div>
             <span class="text-[10px] mono uppercase text-amber-300 font-bold">FLUXO EXECUTIVO • LEITURA EM 3 SEGUNDOS</span>
-            <h3 class="text-base font-bold text-white">Como o Painel Organiza Todas as Informações do Complexo de Gericinó</h3>
+            <h3 id="secretaryModalTitle" class="text-base font-bold text-white">Como o Painel Organiza Todas as Informações do Complexo de Gericinó</h3>
           </div>
         </div>
         <button onclick="toggleSecretaryModal()" aria-label="Fechar guia" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300">
@@ -1460,22 +1469,22 @@
         active ? map.addLayer(layerGroupPerimeter) : map.removeLayer(layerGroupPerimeter);
         document.getElementById('btnLayerPerim').className = active
           ? 'px-2 py-1 rounded bg-emerald-500/20 border border-emerald-500/50 text-emerald-300 text-[10px] font-semibold'
-          : 'px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-500 text-[10px] font-semibold';
+          : 'btn-layer-off';
       } else if (name === 'units') {
         active ? map.addLayer(layerGroupUnits) : map.removeLayer(layerGroupUnits);
         document.getElementById('btnLayerUnits').className = active
           ? 'px-2 py-1 rounded bg-indigo-500/20 border border-indigo-500/50 text-indigo-300 text-[10px] font-semibold'
-          : 'px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-500 text-[10px] font-semibold';
+          : 'btn-layer-off';
       } else if (name === 'jamming') {
         active ? map.addLayer(layerGroupJamming) : map.removeLayer(layerGroupJamming);
         document.getElementById('btnLayerJam').className = active
           ? 'px-2 py-1 rounded bg-fuchsia-500/20 border border-fuchsia-500/50 text-fuchsia-300 text-[10px] font-semibold'
-          : 'px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-500 text-[10px] font-semibold';
+          : 'btn-layer-off';
       } else if (name === 'fronts') {
         active ? map.addLayer(layerGroupColdFronts) : map.removeLayer(layerGroupColdFronts);
         document.getElementById('btnLayerFronts').className = active
           ? 'px-2 py-1 rounded bg-sky-500/25 border border-sky-400/60 text-sky-200 text-[10px] font-bold'
-          : 'px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-500 text-[10px] font-semibold';
+          : 'btn-layer-off';
       } else if (name === 'radar') {
         if (radarTileLayer) {
           active ? map.addLayer(radarTileLayer) : map.removeLayer(radarTileLayer);
@@ -1487,7 +1496,7 @@
         document.getElementById('radarSweepOverlay').style.display = active ? 'flex' : 'none';
         document.getElementById('btnLayerRadar').className = active
           ? 'px-2 py-1 rounded bg-cyan-500/20 border border-cyan-500/50 text-cyan-300 text-[10px] font-semibold'
-          : 'px-2 py-1 rounded bg-slate-900 border border-slate-700 text-slate-500 text-[10px] font-semibold';
+          : 'btn-layer-off';
       }
     }
 
@@ -1917,6 +1926,34 @@ Solicitamos verificação remota imediata de relação sinal-ruído, compensaç�
 3. Executar ronda de verificação de sinal RF adjacente às 3 Áreas Bloqueadas (IDs 017F0B63C4403AE62849, 0FE34A72C5403AE582AF e 06D2ED6C11403AE49321).`;
     }
 
+    let _trapKbd = null, _prevFocus = null;
+    function _openModal(el) {
+      _prevFocus = document.activeElement;
+      el.classList.remove('hidden'); el.classList.add('flex');
+      const focusable = () => [...el.querySelectorAll(
+        'button:not([disabled]),input:not([disabled]),textarea:not([disabled]),a[href],[tabindex]:not([tabindex="-1"])'
+      )];
+      setTimeout(() => { const f = focusable()[0]; if (f) f.focus(); }, 50);
+      if (_trapKbd) document.removeEventListener('keydown', _trapKbd);
+      _trapKbd = (e) => {
+        if (e.key === 'Escape') { _closeModal(el); return; }
+        if (e.key !== 'Tab') return;
+        const els = focusable();
+        if (!els.length) return;
+        if (e.shiftKey && document.activeElement === els[0]) {
+          e.preventDefault(); els[els.length - 1].focus();
+        } else if (!e.shiftKey && document.activeElement === els[els.length - 1]) {
+          e.preventDefault(); els[0].focus();
+        }
+      };
+      document.addEventListener('keydown', _trapKbd);
+    }
+    function _closeModal(el) {
+      el.classList.add('hidden'); el.classList.remove('flex');
+      if (_trapKbd) { document.removeEventListener('keydown', _trapKbd); _trapKbd = null; }
+      if (_prevFocus) { _prevFocus.focus(); _prevFocus = null; }
+    }
+
     function openProtocolModal(target) {
       appState.activeModalTarget = target;
       const titles = {
@@ -1928,15 +1965,11 @@ Solicitamos verificação remota imediata de relação sinal-ruído, compensaç�
       };
       document.getElementById('modalTitle').textContent = titles[target] || 'Protocolo Oficial';
       document.getElementById('modalMessageText').value = buildOfficialMessage(target);
-      const modal = document.getElementById('protocolModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
+      _openModal(document.getElementById('protocolModal'));
     }
 
     function closeProtocolModal() {
-      const modal = document.getElementById('protocolModal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      _closeModal(document.getElementById('protocolModal'));
     }
 
     function copyProtocolText() {
@@ -1967,11 +2000,9 @@ Solicitamos verificação remota imediata de relação sinal-ruído, compensaç�
     function toggleSecretaryModal() {
       const m = document.getElementById('secretaryModal');
       if (m.classList.contains('hidden')) {
-        m.classList.remove('hidden');
-        m.classList.add('flex');
+        _openModal(m);
       } else {
-        m.classList.add('hidden');
-        m.classList.remove('flex');
+        _closeModal(m);
       }
     }
 
