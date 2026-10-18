@@ -1131,7 +1131,6 @@
     // Document id="12dTUKQCidpNuCd5ahfI7KIfPWVZJGODt"
     // Nome: "Complexo de Gericinó e Unidades Bloqueadas"
     // ============================================================================
-    const REDEMET_API_KEY = "Zne1E6KPpATmx57tFTIbgnGEMVsQyXd7";
 
     const KML_ORIGINAL = Object.freeze({
       projectId: "12dTUKQCidpNuCd5ahfI7KIfPWVZJGODt",
@@ -1584,7 +1583,7 @@
 
     async function initRadarAndRedemet() {
       try {
-        const redemetUrl = `https://api-redemet.decea.mil.br/produtos/radar/maxcappi?api_key=${REDEMET_API_KEY}`;
+        const redemetUrl = '/api/radar';
         const redRes = await fetch(redemetUrl);
         if (redRes.ok) {
           const redData = await redRes.json();
