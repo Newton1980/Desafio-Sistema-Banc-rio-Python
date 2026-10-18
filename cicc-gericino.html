@@ -58,6 +58,14 @@
       animation: dash-flow 1.2s linear infinite;
     }
 
+    @keyframes sectorPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.35; }
+    }
+    .animated-sector-pulse {
+      animation: sectorPulse 3.5s ease-in-out infinite;
+    }
+
     .leaflet-container { background: #040811 !important; font-family: 'Inter', sans-serif; }
     .leaflet-popup-content-wrapper {
       background: rgba(15, 23, 42, 0.96) !important;
@@ -1287,16 +1295,36 @@
       const pil = appState.stationsData['serra_piloto'] || { rain: 0, gust: 22 };
 
       if (appState.layers.fronts) {
-        [2000, 10000, 25000, 50000].forEach(radiusM => {
-          L.circle([-22.8414, -43.4820], {
-            radius: radiusM,
-            color: '#38bdf8',
-            weight: 1,
-            dashArray: '4, 6',
-            fill: false,
-            opacity: 0.30
-          }).addTo(layerGroupColdFronts);
-        });
+        // Setor direcional de aproximação (substitui os 4 círculos concêntricos).
+        // Mostra o corredor SO→NE de onde a frente se aproxima.
+        (function drawApproachSector() {
+          function geoArcPt(lat, lon, bear, distM) {
+            const R = 6371000, d = distM / R, b = bear * Math.PI / 180;
+            const φ = lat * Math.PI / 180, λ = lon * Math.PI / 180;
+            const φ2 = Math.asin(Math.sin(φ)*Math.cos(d) + Math.cos(φ)*Math.sin(d)*Math.cos(b));
+            const λ2 = λ + Math.atan2(Math.sin(b)*Math.sin(d)*Math.cos(φ), Math.cos(d) - Math.sin(φ)*Math.sin(φ2));
+            return [φ2 * 180 / Math.PI, λ2 * 180 / Math.PI];
+          }
+          const C = [-22.8414, -43.4820];
+          const FROM = 225, HALF = 52; // frente vem do SW; setor de 104°
+          const rings = [
+            { r: 3000,  fOp: 0.28, sOp: 0.90, w: 1.5, cls: '' },
+            { r: 12000, fOp: 0.14, sOp: 0.60, w: 1.0, cls: '' },
+            { r: 28000, fOp: 0.08, sOp: 0.45, w: 0.8, cls: '' },
+            { r: 55000, fOp: 0.04, sOp: 0.28, w: 0.5, cls: 'animated-sector-pulse' }
+          ];
+          rings.forEach(({ r, fOp, sOp, w, cls }) => {
+            const arc = [];
+            for (let a = FROM - HALF; a <= FROM + HALF; a += 3) {
+              arc.push(geoArcPt(C[0], C[1], a, r));
+            }
+            L.polygon([C, ...arc, C], {
+              color: '#38bdf8', weight: w, opacity: sOp,
+              fillColor: '#0ea5e9', fillOpacity: fOp,
+              className: cls, interactive: false
+            }).addTo(layerGroupColdFronts);
+          });
+        })();
       }
 
       const isSpActive = appState.scenario === 'sp_front' || appState.scenario === 'severe' || (sp.rain > 0.2 || pil.rain > 0.2);
@@ -1373,9 +1401,35 @@
 
         L.polyline(coldFrontArcLocal, {
           color: '#0ea5e9',
-          weight: 4,
-          opacity: 0.92
+          weight: 3.5,
+          opacity: 0.95
         }).bindPopup(`<b>Frente Fria / Linha de Instabilidade</b><br>Vetor: SO → NE (${Math.round(g.gust || 28)} km/h)`).addTo(layerGroupColdFronts);
+
+        // Triângulos meteorológicos (símbolo padrão INMET de frente fria):
+        // triângulos cheios sobre a linha, apontando para o lado de avanço da massa fria.
+        (function addFrontTriangles(arc) {
+          const CL = Math.cos(-22.84 * Math.PI / 180);
+          for (let i = 0; i < arc.length - 1; i++) {
+            const [y1, x1] = arc[i], [y2, x2] = arc[i + 1];
+            const my = (y1 + y2) / 2, mx = (x1 + x2) / 2;
+            const dy = y2 - y1, dxEq = (x2 - x1) * CL;
+            const len = Math.sqrt(dy * dy + dxEq * dxEq) || 1;
+            // Tangente normalizada (direção da linha)
+            const tLat = dy / len, tLon = dxEq / (len * CL);
+            // Perpendicular esquerda (aponta para SE = lado de avanço)
+            const pLat = -dxEq / len, pLon = dy / (len * CL);
+            const h = 0.016, b = 0.008; // tamanho em graus ≈ 1.8km altura, 0.9km base
+            L.polygon([
+              [my + pLat * h, mx + pLon * h],   // ponta
+              [my - tLat * b, mx - tLon * b],   // base esq
+              [my + tLat * b, mx + tLon * b]    // base dir
+            ], {
+              color: '#0ea5e9', weight: 1,
+              fillColor: '#0ea5e9', fillOpacity: 0.93,
+              interactive: false
+            }).addTo(layerGroupColdFronts);
+          }
+        })(coldFrontArcLocal);
 
         const futureArcLocal = coldFrontArcLocal.map(pt => [pt[0] + 0.006, pt[1] + 0.011]);
         L.polyline(futureArcLocal, {
