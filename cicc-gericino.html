@@ -185,6 +185,45 @@
       grid-column: span 12 !important;
     }
 
+    /* ── TELA CHEIA REAL: zero padding, KPI bar e toolbars ocultos ── */
+    body.immersive-mode #kpiBar {
+      display: none !important;
+    }
+
+    body.immersive-mode #mainGrid {
+      padding: 0 !important;
+      gap: 0 !important;
+    }
+
+    body.immersive-mode #colMap {
+      gap: 0 !important;
+    }
+
+    body.immersive-mode #mapCard {
+      padding: 0 !important;
+      border: none !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
+      min-height: 0 !important;
+    }
+
+    body.immersive-mode #mapNavBar {
+      display: none !important;
+    }
+
+    body.immersive-mode #radarStrip {
+      display: none !important;
+    }
+
+    body.immersive-mode #colMap .relative {
+      border-radius: 0 !important;
+      border: none !important;
+      min-height: 0 !important;
+    }
+
     /* Cards glassmorphism flutuantes */
     .glass-card-overlay {
       display: none;
@@ -318,7 +357,7 @@
   </header>
 
   <!-- FAIXA EXECUTIVA DE LEITURA EM 3 SEGUNDOS (5 KPIs SEMPRE VISÍVEIS) -->
-  <section aria-label="Indicadores de estado operacional" class="bg-slate-950/95 border-b border-slate-800/90 px-3 py-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 shrink-0 z-20">
+  <section id="kpiBar" aria-label="Indicadores de estado operacional" class="bg-slate-950/95 border-b border-slate-800/90 px-3 py-1.5 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 shrink-0 z-20">
     <div onclick="switchLeftSubmenu('clima')" class="glass rounded-lg px-3 py-1.5 flex flex-col justify-between border-l-4 border-l-emerald-500 cursor-pointer hover:brightness-110 hover:scale-[1.01] transition" id="kpiCardStage">
       <div class="flex items-center justify-between">
         <span class="text-[11px] mono uppercase text-slate-400 font-semibold">1. Nível Operacional</span>
@@ -391,7 +430,7 @@
   </section>
 
   <!-- ÁREA CENTRAL BEM DISTRIBUÍDA (12 COLUNAS: 3 ESQUERDA + 6 MAPA + 3 DIREITA) -->
-  <main class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-3 p-3 xl:overflow-hidden">
+  <main id="mainGrid" class="flex-1 grid grid-cols-1 xl:grid-cols-12 gap-3 p-3 xl:overflow-hidden">
 
     <!-- COLUNA ESQUERDA: SUBMENUS DE MONITORAMENTO (PASSOS 1, 2 E 3) -->
     <section aria-label="Monitoramento meteorológico e climatológico" id="colLeft" class="immersive-left xl:col-span-3 flex flex-col gap-2.5 xl:overflow-hidden">
@@ -608,10 +647,10 @@
 
     <!-- COLUNA CENTRAL: MAPA SATÉLITE KML + BARRAS ACOPLADAS DE RADAR E LEGENDA -->
     <section aria-label="Mapa operacional e radar meteorológico" id="colMap" class="immersive-map xl:col-span-6 flex flex-col gap-2 xl:overflow-hidden">
-      <div class="glass rounded-xl p-2.5 flex-1 flex flex-col border border-slate-800 min-h-[300px] xl:min-h-[540px]">
+      <div id="mapCard" class="glass rounded-xl p-2.5 flex-1 flex flex-col border border-slate-800 min-h-[300px] xl:min-h-[540px]">
 
         <!-- Barra Superior do Mapa: Navegação KML + Camadas -->
-        <div class="flex flex-wrap items-center justify-between gap-x-1.5 gap-y-1.5 pb-2 border-b border-slate-800/90 mb-2 shrink-0">
+        <div id="mapNavBar" class="flex flex-wrap items-center justify-between gap-x-1.5 gap-y-1.5 pb-2 border-b border-slate-800/90 mb-2 shrink-0">
           <div class="flex items-center gap-x-1 gap-y-1 flex-wrap">
             <button onclick="focusView('complexo')" class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-700/30 border border-emerald-500/40 text-[10px] font-bold text-emerald-200 transition">
               Perímetro Gericinó
@@ -708,7 +747,7 @@
         </div>
 
         <!-- BARRA ACOPLADA ABAIXO DO MAPA: PLAYER DE ANIMAÇÃO DO RADAR + LEGENDA KML/dBZ -->
-        <div class="mt-2 pt-2 border-t border-slate-800/90 flex flex-col gap-1.5 shrink-0">
+        <div id="radarStrip" class="mt-2 pt-2 border-t border-slate-800/90 flex flex-col gap-1.5 shrink-0">
           <!-- Linha 1: Player do Radar e Deslocamento de Frentes -->
           <div class="bg-slate-900/90 px-3 py-1.5 rounded-lg border border-slate-800 flex flex-wrap items-center justify-between gap-2">
             <div class="flex items-center gap-2">
