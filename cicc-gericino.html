@@ -185,7 +185,7 @@
       grid-column: span 12 !important;
     }
 
-    /* ── TELA CHEIA REAL: zero padding, KPI bar e toolbars ocultos ── */
+    /* ── TELA CHEIA REAL: position fixed — sem dependência de herança CSS ── */
     body.immersive-mode #kpiBar {
       display: none !important;
     }
@@ -193,16 +193,22 @@
     body.immersive-mode #mainGrid {
       padding: 0 !important;
       gap: 0 !important;
-      /* força a única row do grid a preencher toda a altura disponível */
-      grid-template-rows: 1fr !important;
-      align-content: stretch !important;
     }
 
+    /*
+     * #colMap vira overlay fixed: ocupa 100% da viewport abaixo do header.
+     * O valor de `top` é injetado via JS (header.offsetHeight) para garantir
+     * que o cálculo seja feito em runtime, independente de quantas linhas
+     * o header ocupa.
+     */
     body.immersive-mode #colMap {
+      position: fixed !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100% !important;
       gap: 0 !important;
-      /* altura explícita para que os filhos flex-1 se expandam corretamente */
-      height: 100% !important;
-      min-height: 0 !important;
+      z-index: 500;
     }
 
     body.immersive-mode #mapCard {
@@ -213,9 +219,7 @@
       backdrop-filter: none !important;
       -webkit-backdrop-filter: none !important;
       box-shadow: none !important;
-      /* flex-1 precisa de min-height:0 para colapsar corretamente em flex */
       min-height: 0 !important;
-      height: 100% !important;
     }
 
     body.immersive-mode #mapNavBar {
@@ -229,12 +233,6 @@
     body.immersive-mode #colMap .relative {
       border-radius: 0 !important;
       border: none !important;
-      min-height: 0 !important;
-      height: 100% !important;
-    }
-
-    body.immersive-mode #map {
-      min-height: 0 !important;
     }
 
     /* Cards glassmorphism flutuantes */
@@ -1305,33 +1303,38 @@
 
     function toggleImmersiveMode() {
       _immersiveActive = !_immersiveActive;
-      const btn = document.getElementById('btnImmersive');
-      const icon = document.getElementById('immersiveIcon');
+      const btn    = document.getElementById('btnImmersive');
+      const icon   = document.getElementById('immersiveIcon');
+      const colMap = document.getElementById('colMap');
       btn.setAttribute('aria-pressed', String(_immersiveActive));
+
       if (_immersiveActive) {
         document.body.classList.add('immersive-mode');
+
+        // Mede a altura real do header APÓS adicionar a classe (layout atualizado)
+        // e injeta como top do elemento fixed — sem dependência de CSS inheritance
+        requestAnimationFrame(() => {
+          const header = document.querySelector('header');
+          if (colMap && header) {
+            colMap.style.top = header.offsetHeight + 'px';
+          }
+          // Com position:fixed o tamanho é conhecido imediatamente — não precisa de delay
+          if (window._map) window._map.invalidateSize({ pan: false });
+        });
+
         if (icon) { icon.setAttribute('data-lucide', 'minimize-2'); lucide.createIcons(); }
         btn.title = 'Sair do modo imersivo';
         _syncGlassCards();
-        // sincroniza novamente após dados atualizarem
         setTimeout(_syncGlassCards, 500);
+
       } else {
         document.body.classList.remove('immersive-mode');
+        if (colMap) colMap.style.top = '';   // limpa inline style
+        if (window._map) {
+          requestAnimationFrame(() => window._map.invalidateSize({ pan: false }));
+        }
         if (icon) { icon.setAttribute('data-lucide', 'maximize-2'); lucide.createIcons(); }
         btn.title = 'Modo imersivo: mapa expandido com cards flutuantes';
-      }
-      // força Leaflet a recalcular o tamanho do mapa
-      if (window._map) {
-        // Chamada precoce para acertar o tamanho antes das transições terminarem
-        setTimeout(() => window._map.invalidateSize(), 50);
-        // Chamada definitiva após todas as transições CSS terminarem
-        setTimeout(() => {
-          window._map.invalidateSize();
-          // Força o Leaflet a recarregar tiles para toda a área expandida
-          const c = window._map.getCenter();
-          const z = window._map.getZoom();
-          window._map.setView(c, z, { animate: false });
-        }, 650);
       }
     }
 
