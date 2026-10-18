@@ -1308,7 +1308,18 @@
         btn.title = 'Modo imersivo: mapa expandido com cards flutuantes';
       }
       // força Leaflet a recalcular o tamanho do mapa
-      if (window._map) setTimeout(() => window._map.invalidateSize(), 320);
+      if (window._map) {
+        // Chamada precoce para acertar o tamanho antes das transições terminarem
+        setTimeout(() => window._map.invalidateSize(), 50);
+        // Chamada definitiva após todas as transições CSS terminarem
+        setTimeout(() => {
+          window._map.invalidateSize();
+          // Força o Leaflet a recarregar tiles para toda a área expandida
+          const c = window._map.getCenter();
+          const z = window._map.getZoom();
+          window._map.setView(c, z, { animate: false });
+        }, 650);
+      }
     }
 
     // ============================================================================
